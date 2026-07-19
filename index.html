@@ -80,7 +80,7 @@
             </div>
         </header>
 
-        <!-- メインコンテンツ -->
+        <!-- メメインコンテンツ -->
         <main class="p-4 space-y-4 flex-grow">
 
             <!-- 検索 & フィルターコントロールパネル -->
@@ -103,6 +103,17 @@
                         class="flex-1 py-2 text-xs md:text-sm font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-1.5">
                         ⭐️ その他 (<span id="count-others">0</span>)
                     </button>
+                </div>
+
+                <!-- 📅 最新順 ⇄ ❤️ 人気順 切り替えスイッチパネル -->
+                <div
+                    class="flex items-center justify-end gap-3 text-xs border-t border-gray-100 pt-2 text-gray-400 font-bold">
+                    <span><i class="fa-solid fa-arrows-up-down text-[10px]"></i> 並び替え:</span>
+                    <button onclick="changeSort('newest')" id="sort-newest" class="text-[#00C300] transition">📅
+                        最新順</button>
+                    <span class="text-gray-200">|</span>
+                    <button onclick="changeSort('hearts')" id="sort-hearts" class="hover:text-[#00C300] transition">❤️
+                        人気順</button>
                 </div>
 
                 <!-- サブフィルター：すべて ⇄ 各種カテゴリ -->
@@ -172,97 +183,126 @@
     <script>
         // ==================== CONFIGURATION ====================
         const SPREADSHEET_ID = '1sZ-NHSGmmXdvwDbDnsZtWSNdGt-4W3gGxhCs6ZOdp5s';
-        const GID = '0';
+        const GID_MASTER = '0';
+        const GID_HEART = '414139365';
         // =======================================================
 
         let allStamps = [];
         let currentCategory = 'okinawa';
         let currentType = 'all';
+        let currentSort = 'newest';
         let searchQuery = '';
 
-        const headerMap = {
-            '日本語タイトル': 'title', 'タイトル': 'title', 'title': 'title',
-            'ストアurl': 'url', 'url': 'url', '販売url': 'url',
-            'カテゴリ': 'type', 'type': 'type', '種類': 'type',
-            'サムネイルurl': 'img', '画像': 'img', 'img': 'img', '画像url': 'img', '画像パス': 'img',
-            '販売開始日': 'date', '開始日': 'date', 'date': 'date'
-        };
+        // 🛠️ 【修正】確実に118件のロードに成功していた元の安定URL形式（/export）に完全に戻します
+        async function fetchTabCSV(gid) {
+            const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Fetch failed for gid: ${gid}`);
+            return await response.text();
+        }
+
+        function parseCSVText(csvText) {
+            return new Promise((resolve) => {
+                Papa.parse(csvText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: function (results) {
+                        resolve(results.data);
+                    },
+                    error: function () {
+                        resolve([]);
+                    }
+                });
+            });
+        }
 
         async function fetchSpreadsheetData() {
-            const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${GID}`;
-
             try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Network response was not ok');
-                const csvText = await response.text();
+                const [masterRaw, heartRaw] = await Promise.all([
+                    fetchTabCSV(GID_MASTER).then(parseCSVText),
+                    fetchTabCSV(GID_HEART).then(parseCSVText)
+                ]);
 
-                return new Promise((resolve) => {
-                    Papa.parse(csvText, {
-                        header: true,
-                        skipEmptyLines: true,
-                        complete: function (results) {
-                            const mappedData = results.data.map(row => {
-                                const obj = { title: '', url: '', type: 'sticker', img: '', date: '' };
+                const heartMap = {};
+                heartRaw.forEach(row => {
+                    let itemId = '';
+                    let heartCount = 0;
 
-                                Object.keys(row).forEach(key => {
-                                    const k = key.trim().toLowerCase();
-                                    const val = row[key] ? row[key].trim() : '';
-
-                                    // ⚠️「サムネイルURL」が「URL」に誤判定されないよう、最優先で処理を確定させます
-                                    if (k.includes('サムネイル') || k.includes('画像') || k.includes('img')) {
-                                        obj.img = val;
-                                    } else if (k.includes('タイトル') || k.includes('title') || k.includes('作品名')) {
-                                        obj.title = val;
-                                    } else if (k.includes('url') || k.includes('リンク') || k.includes('ストア')) {
-                                        obj.url = val;
-                                    } else if (k.includes('カテゴリ') || k.includes('type') || k.includes('種類')) {
-                                        if (val.includes('エフェクトスタンプ')) {
-                                            obj.type = 'effect-sticker';
-                                        } else if (val.includes('ポップアップスタンプ')) {
-                                            obj.type = 'popup-sticker';
-                                        } else if (val.includes('動くスタンプ') || val.includes('アニメーションスタンプ')) {
-                                            obj.type = 'animated-sticker';
-                                        } else if (val.includes('動く絵文字') || val.includes('アニメーション絵文字')) {
-                                            obj.type = 'animated-emoji';
-                                        } else if (val.includes('絵文字')) {
-                                            obj.type = 'emoji';
-                                        } else if (val.includes('着せ替え') || val.includes('着せかえ') || val.includes('テーマ')) {
-                                            obj.type = 'theme';
-                                        } else {
-                                            obj.type = 'sticker';
-                                        }
-                                    } else if (k.includes('開始日') || k.includes('日付') || k.includes('date')) {
-                                        obj.date = val;
-                                    }
-                                });
-
-                                const titleText = (obj.title || '').toLowerCase();
-                                const isOkinawa = titleText.includes('沖縄') ||
-                                    titleText.includes('okinawa') ||
-                                    titleText.includes('うちなー') ||
-                                    titleText.includes('シーサー') ||
-                                    titleText.includes('ウチナー');
-
-                                obj.category = isOkinawa ? 'okinawa' : 'others';
-
-                                return obj;
-                            }).filter(item =>
-                                item.title &&
-                                item.url &&
-                                item.type !== 'theme' &&
-                                !item.title.includes('販売終了') &&
-                                !item.title.includes('販売停止')
-                            );
-
-                            console.log('【配信中のみ】有効連動データ数:', mappedData.length);
-                            resolve(mappedData);
-                        },
-                        error: function (err) {
-                            console.error('CSV Parsing error:', err);
-                            resolve([]);
+                    Object.keys(row).forEach(key => {
+                        const k = key.trim().toLowerCase();
+                        const val = row[key] ? row[key].trim() : '';
+                        if (k.includes('item id') || k.includes('id')) {
+                            itemId = val;
+                        }
+                        if (k.includes('ハート') || k.includes('heart')) {
+                            heartCount = parseInt(val, 10) || 0;
                         }
                     });
+
+                    if (itemId) {
+                        heartMap[itemId] = heartCount;
+                    }
                 });
+
+                const mappedData = masterRaw.map(row => {
+                    const obj = { id: '', title: '', url: '', type: 'sticker', img: '', date: '', hearts: 0 };
+
+                    Object.keys(row).forEach(key => {
+                        const k = key.trim().toLowerCase();
+                        const val = row[key] ? row[key].trim() : '';
+
+                        if (k.includes('item id') || k.includes('id')) {
+                            obj.id = val;
+                        } else if (k.includes('サムネイル') || k.includes('画像') || k.includes('img')) {
+                            obj.img = val;
+                        } else if (k.includes('タイトル') || k.includes('title') || k.includes('作品名')) {
+                            obj.title = val;
+                        } else if (k.includes('url') || k.includes('リンク') || k.includes('ストア')) {
+                            obj.url = val;
+                        } else if (k.includes('カテゴリ') || k.includes('type') || k.includes('種類')) {
+                            if (val.includes('エフェクトスタンプ')) {
+                                obj.type = 'effect-sticker';
+                            } else if (val.includes('ポップアップスタンプ')) {
+                                obj.type = 'popup-sticker';
+                            } else if (val.includes('動くスタンプ') || val.includes('アニメーションスタンプ')) {
+                                obj.type = 'animated-sticker';
+                            } else if (val.includes('動く絵文字') || val.includes('アニメーション絵文字')) {
+                                obj.type = 'animated-emoji';
+                            } else if (val.includes('絵文字')) {
+                                obj.type = 'emoji';
+                            } else if (val.includes('着せ替え') || val.includes('着せかえ') || val.includes('テーマ')) {
+                                obj.type = 'theme';
+                            } else {
+                                obj.type = 'sticker';
+                            }
+                        } else if (k.includes('開始日') || k.includes('日付') || k.includes('date')) {
+                            obj.date = val;
+                        }
+                    });
+
+                    obj.hearts = heartMap[obj.id] || 0;
+
+                    const titleText = (obj.title || '').toLowerCase();
+                    const isOkinawa = titleText.includes('沖縄') ||
+                        titleText.includes('okinawa') ||
+                        titleText.includes('うちなー') ||
+                        titleText.includes('シーサー') ||
+                        titleText.includes('shisa') ||
+                        titleText.includes('ウチナー');
+
+                    obj.category = isOkinawa ? 'okinawa' : 'others';
+
+                    return obj;
+                }).filter(item =>
+                    item.title &&
+                    item.url &&
+                    item.type !== 'theme' &&
+                    !item.title.includes('販売終了') &&
+                    !item.title.includes('販売停止')
+                );
+
+                console.log('【配信中のみ】有効連動データ数:', mappedData.length);
+                return mappedData; // 🛠️ 【修正】構文エラーの原因だった場所を、正しい「return」に修正完了！
             } catch (error) {
                 console.error('Error fetching sheets:', error);
                 showError();
@@ -275,12 +315,18 @@
             const emptyState = document.getElementById('empty-state');
             grid.innerHTML = '';
 
-            const filtered = allStamps.filter(stamp => {
+            let filtered = allStamps.filter(stamp => {
                 const matchCategory = stamp.category === currentCategory;
                 const matchType = currentType === 'all' || stamp.type === currentType;
                 const matchSearch = searchQuery === '' || stamp.title.toLowerCase().includes(searchQuery.toLowerCase());
                 return matchCategory && matchType && matchSearch;
             });
+
+            if (currentSort === 'newest') {
+                filtered.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            } else if (currentSort === 'hearts') {
+                filtered.sort((a, b) => b.hearts - a.hearts);
+            }
 
             updateBadgeCounts();
 
@@ -314,6 +360,10 @@
                     badgeStyle = 'bg-cyan-50 text-cyan-600 border border-cyan-100';
                 }
 
+                const heartBadge = stamp.hearts > 0
+                    ? `<span class="text-[10px] text-rose-500 font-bold bg-rose-50 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-heart text-[8px]"></i>${stamp.hearts}</span>`
+                    : '';
+
                 const dateHtml = stamp.date
                     ? `<p class="text-[10px] text-gray-400 font-bold flex items-center gap-1 pt-1"><i class="fa-regular fa-calendar-days text-[9px] text-gray-400"></i>${stamp.date} 発売</p>`
                     : '';
@@ -327,7 +377,10 @@
                         </div>
                         <div class="p-3 flex flex-col justify-between flex-grow space-y-2">
                             <div class="space-y-1">
-                                <span class="inline-block text-[9px] font-black px-1.5 py-0.5 rounded ${badgeStyle}">${badgeLabel}</span>
+                                <div class="flex items-center justify-between gap-1">
+                                    <span class="inline-block text-[9px] font-black px-1.5 py-0.5 rounded ${badgeStyle}">${badgeLabel}</span>
+                                    ${heartBadge}
+                                </div>
                                 <h3 class="text-xs font-bold text-gray-800 line-clamp-2 leading-snug h-[34px]">${stamp.title}</h3>
                                 ${dateHtml}
                             </div>
@@ -340,6 +393,21 @@
                 `;
                 grid.insertAdjacentHTML('beforeend', card);
             });
+        }
+
+        function changeSort(type) {
+            currentSort = type;
+            const btnNewest = document.getElementById('sort-newest');
+            const btnHearts = document.getElementById('sort-hearts');
+
+            if (type === 'newest') {
+                btnNewest.className = 'text-[#00C300] font-bold transition';
+                btnHearts.className = 'text-gray-400 hover:text-[#00C300] transition';
+            } else {
+                btnHearts.className = 'text-[#00C300] font-bold transition';
+                btnNewest.className = 'text-gray-400 hover:text-[#00C300] transition';
+            }
+            render();
         }
 
         function updateBadgeCounts() {
