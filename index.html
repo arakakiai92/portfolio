@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ARAKAKIAIworks | LINE Stamp Portfolio</title>
+
+    <!-- ファビコンにがま口シーサーをセット -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for beautiful icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- PapaParse for robust CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 携帯（スマホ）特化のコンテナ設計 */
+        .phone-container {
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            border-left: 1px solid #f1f5f9;
+            border-right: 1px solid #f1f5f9;
+        }
+
+        /* 分析アプリと同一トーン of ボタンアクティブ状態 */
+        .btn-active {
+            background-color: #00C300 !important;
+            color: #ffffff !important;
+            border-color: #00C300 !important;
+        }
+
+        /* 2列カードのイメージ比率維持 */
+        .img-aspect-square {
+            aspect-ratio: 1 / 1;
+        }
+
+        /* テキストの2行省略 */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body class="flex justify-center items-start min-h-screen">
+
+    <div class="phone-container">
+
+        <!-- ヘッダー (売上分析アプリのデザインと完全一致) -->
+        <header class="bg-[#00C300] text-white shadow-md sticky top-0 z-50">
+            <div class="px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center">
+                    <!-- がま口なしの可愛いシーサーアイコン (fallback対応) -->
+                    <img src="top-left_2.png" alt="シーサーアイコン" class="h-12 w-auto block object-contain"
+                        onerror="this.onerror=null; this.src='top-left.png';">
+                    <div class="ml-2.5">
+                        <h1 class="text-sm font-bold leading-tight">ARAKAKIAIworks</h1>
+                        <p class="text-[10px] text-green-100" id="total-count">ポートフォリオサイト (読み込み中...)</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="p-4 space-y-4 flex-grow">
+
+            <!-- 検索 & フィルターコントロールパネル -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3.5">
+                <!-- 検索バー -->
+                <div class="relative">
+                    <i
+                        class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="search-input" placeholder="キーワードで作品を検索..."
+                        class="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00C300] focus:border-[#00C300] transition">
+                </div>
+
+                <!-- メインタブ：沖縄系 ⇄ その他 -->
+                <div class="flex gap-2">
+                    <button onclick="switchCategory('okinawa')" id="tab-okinawa"
+                        class="flex-1 py-2 text-xs md:text-sm font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-1.5">
+                        🌺 沖縄系 (<span id="count-okinawa">0</span>)
+                    </button>
+                    <button onclick="switchCategory('others')" id="tab-others"
+                        class="flex-1 py-2 text-xs md:text-sm font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-1.5">
+                        ⭐️ その他 (<span id="count-others">0</span>)
+                    </button>
+                </div>
+
+                <!-- サブフィルター：すべて ⇄ 各種カテゴリ -->
+                <div class="flex flex-wrap justify-start gap-1.5 border-t border-gray-100 pt-3">
+                    <button onclick="filterType('all')" id="sub-all"
+                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">すべて</button>
+                    <button onclick="filterType('sticker')" id="sub-sticker"
+                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">スタンプ</button>
+                    <button onclick="filterType('animated-sticker')" id="sub-animated-sticker"
+                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">動くスタンプ</button>
+                    <button onclick="filterType('popup-sticker')" id="sub-popup-sticker"
+                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">大きく動くスタンプ</button>
+                    <button onclick="filterType('effect-sticker')" id="sub-effect-sticker"
+                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">背景が大きく動くスタンプ</button>
+                    <button onclick="filterType('emoji')" id="sub-emoji"
+                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">絵文字</button>
+                    <button onclick="filterType('animated-emoji')" id="sub-animated-emoji"
+                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">動く絵文字</button>
+                </div>
+            </div>
+
+            <!-- スケルトンローディング表示 -->
+            <div id="loading-placeholder" class="grid grid-cols-2 gap-3">
+                <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex flex-col space-y-2">
+                    <div class="img-aspect-square bg-gray-100 rounded-lg animate-pulse"></div>
+                    <div class="h-3 bg-gray-100 rounded w-1/3 animate-pulse"></div>
+                    <div class="h-4 bg-gray-100 rounded w-5/6 animate-pulse"></div>
+                </div>
+            </div>
+
+            <!-- エラー表示 -->
+            <div id="error-message"
+                class="hidden text-center py-12 px-4 space-y-3 bg-white rounded-xl border border-gray-200 shadow-sm">
+                <i class="fa-solid fa-circle-exclamation text-rose-500 text-3xl"></i>
+                <h3 class="font-bold text-gray-800">データの読み込みに失敗しました</h3>
+                <p class="text-xs text-gray-500 leading-relaxed max-w-[280px] mx-auto">
+                    スプレッドシートの閲覧設定が「リンクを知っている全員」になっているか、IDが正しいかご確認ください。</p>
+            </div>
+
+            <!-- 空状態表示 -->
+            <div id="empty-state"
+                class="hidden text-center py-16 bg-white rounded-xl border border-gray-200 shadow-sm space-y-2">
+                <i class="fa-regular fa-face-frown text-3xl text-gray-300"></i>
+                <p class="text-sm font-bold text-gray-400">該当する作品が見つかりませんでした</p>
+            </div>
+
+            <!-- 作品グリッド -->
+            <div id="stamp-grid" class="grid grid-cols-2 gap-3 hidden">
+                <!-- JavaScriptにより動的生成されます -->
+            </div>
+
+        </main>
+
+        <!-- フッター -->
+        <footer
+            class="p-4 text-xs text-gray-400 border-t border-gray-100 mt-auto flex justify-between items-center bg-gray-50">
+            <p class="leading-tight">
+                © 2026 <a href="https://store.line.me/search/ja?q=arakakiai" target="_blank" rel="noopener noreferrer"
+                    class="text-[#00C300] hover:text-[#009900] font-bold">ARAKAKIAIworks</a>.<br>All Rights Reserved.
+            </p>
+            <img src="bottom-right_2.png" alt="シーサーロゴ" class="h-10 w-auto object-contain block"
+                onerror="this.onerror=null; this.src='bottom-right.png';">
+        </footer>
+
+    </div>
+
+    <script>
+        // ==================== CONFIGURATION ====================
+        const SPREADSHEET_ID = '1sZ-NHSGmmXdvwDbDnsZtWSNdGt-4W3gGxhCs6ZOdp5s';
+        const GID = '0';
+        // =======================================================
+
+        let allStamps = [];
+        let currentCategory = 'okinawa';
+        let currentType = 'all';
+        let searchQuery = '';
+
+        const headerMap = {
+            '日本語タイトル': 'title', 'タイトル': 'title', 'title': 'title',
+            'ストアurl': 'url', 'url': 'url', '販売url': 'url',
+            'カテゴリ': 'type', 'type': 'type', '種類': 'type',
+            'サムネイルurl': 'img', '画像': 'img', 'img': 'img', '画像url': 'img', '画像パス': 'img',
+            '販売開始日': 'date', '開始日': 'date', 'date': 'date'
+        };
+
+        async function fetchSpreadsheetData() {
+            const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${GID}`;
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const csvText = await response.text();
+
+                return new Promise((resolve) => {
+                    Papa.parse(csvText, {
+                        header: true,
+                        skipEmptyLines: true,
+                        complete: function (results) {
+                            const mappedData = results.data.map(row => {
+                                const obj = { title: '', url: '', type: 'sticker', img: '', date: '' };
+
+                                Object.keys(row).forEach(key => {
+                                    const k = key.trim().toLowerCase();
+                                    const val = row[key] ? row[key].trim() : '';
+
+                                    // ⚠️「サムネイルURL」が「URL」に誤判定されないよう、最優先で処理を確定させます
+                                    if (k.includes('サムネイル') || k.includes('画像') || k.includes('img')) {
+                                        obj.img = val;
+                                    } else if (k.includes('タイトル') || k.includes('title') || k.includes('作品名')) {
+                                        obj.title = val;
+                                    } else if (k.includes('url') || k.includes('リンク') || k.includes('ストア')) {
+                                        obj.url = val;
+                                    } else if (k.includes('カテゴリ') || k.includes('type') || k.includes('種類')) {
+                                        if (val.includes('エフェクトスタンプ')) {
+                                            obj.type = 'effect-sticker';
+                                        } else if (val.includes('ポップアップスタンプ')) {
+                                            obj.type = 'popup-sticker';
+                                        } else if (val.includes('動くスタンプ') || val.includes('アニメーションスタンプ')) {
+                                            obj.type = 'animated-sticker';
+                                        } else if (val.includes('動く絵文字') || val.includes('アニメーション絵文字')) {
+                                            obj.type = 'animated-emoji';
+                                        } else if (val.includes('絵文字')) {
+                                            obj.type = 'emoji';
+                                        } else if (val.includes('着せ替え') || val.includes('着せかえ') || val.includes('テーマ')) {
+                                            obj.type = 'theme';
+                                        } else {
+                                            obj.type = 'sticker';
+                                        }
+                                    } else if (k.includes('開始日') || k.includes('日付') || k.includes('date')) {
+                                        obj.date = val;
+                                    }
+                                });
+
+                                const titleText = (obj.title || '').toLowerCase();
+                                const isOkinawa = titleText.includes('沖縄') ||
+                                    titleText.includes('okinawa') ||
+                                    titleText.includes('うちなー') ||
+                                    titleText.includes('ウチナー');
+
+                                obj.category = isOkinawa ? 'okinawa' : 'others';
+
+                                return obj;
+                            }).filter(item =>
+                                item.title &&
+                                item.url &&
+                                item.type !== 'theme' &&
+                                !item.title.includes('販売終了') &&
+                                !item.title.includes('販売停止')
+                            );
+
+                            console.log('【配信中のみ】有効連動データ数:', mappedData.length);
+                            resolve(mappedData);
+                        },
+                        error: function (err) {
+                            console.error('CSV Parsing error:', err);
+                            resolve([]);
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('Error fetching sheets:', error);
+                showError();
+                return [];
+            }
+        }
+
+        function render() {
+            const grid = document.getElementById('stamp-grid');
+            const emptyState = document.getElementById('empty-state');
+            grid.innerHTML = '';
+
+            const filtered = allStamps.filter(stamp => {
+                const matchCategory = stamp.category === currentCategory;
+                const matchType = currentType === 'all' || stamp.type === currentType;
+                const matchSearch = searchQuery === '' || stamp.title.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchCategory && matchType && matchSearch;
+            });
+
+            updateBadgeCounts();
+
+            if (filtered.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.classList.remove('hidden');
+
+            filtered.forEach(stamp => {
+                let badgeLabel = 'スタンプ';
+                let badgeStyle = 'bg-pink-50 text-pink-600 border border-pink-100';
+
+                if (stamp.type === 'emoji') {
+                    badgeLabel = '絵文字';
+                    badgeStyle = 'bg-purple-50 text-purple-600 border border-purple-100';
+                } else if (stamp.type === 'animated-sticker') {
+                    badgeLabel = '動くスタンプ';
+                    badgeStyle = 'bg-rose-50 text-rose-600 border border-rose-100';
+                } else if (stamp.type === 'animated-emoji') {
+                    badgeLabel = '動く絵文字';
+                    badgeStyle = 'bg-indigo-50 text-indigo-600 border border-indigo-100';
+                } else if (stamp.type === 'popup-sticker') {
+                    badgeLabel = '大きく動くスタンプ';
+                    badgeStyle = 'bg-amber-50 text-amber-600 border border-amber-100';
+                } else if (stamp.type === 'effect-sticker') {
+                    badgeLabel = '背景が大きく動くスタンプ';
+                    badgeStyle = 'bg-cyan-50 text-cyan-600 border border-cyan-100';
+                }
+
+                const dateHtml = stamp.date
+                    ? `<p class="text-[10px] text-gray-400 font-bold flex items-center gap-1 pt-1"><i class="fa-regular fa-calendar-days text-[9px] text-gray-400"></i>${stamp.date} 発売</p>`
+                    : '';
+
+                const card = `
+                    <a href="${stamp.url}" target="_blank" rel="noopener" 
+                       class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col hover:shadow-md transition duration-200 active:scale-[0.98]">
+                        <div class="img-aspect-square bg-white flex items-center justify-center p-3 border-b border-gray-100">
+                            <img src="${stamp.img}" alt="${stamp.title}" loading="lazy" class="max-w-full max-h-full object-contain"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/150x150/ffffff/cccccc?text=LINE';">
+                        </div>
+                        <div class="p-3 flex flex-col justify-between flex-grow space-y-2">
+                            <div class="space-y-1">
+                                <span class="inline-block text-[9px] font-black px-1.5 py-0.5 rounded ${badgeStyle}">${badgeLabel}</span>
+                                <h3 class="text-xs font-bold text-gray-800 line-clamp-2 leading-snug h-[34px]">${stamp.title}</h3>
+                                ${dateHtml}
+                            </div>
+                            <div class="flex items-center justify-between text-[10px] text-gray-400 font-bold border-t border-gray-50 pt-2">
+                                <span class="text-[#00C300]">LINEストア</span>
+                                <i class="fa-solid fa-chevron-right text-[8px] text-[#00C300]"></i>
+                            </div>
+                        </div>
+                    </a>
+                `;
+                grid.insertAdjacentHTML('beforeend', card);
+            });
+        }
+
+        function updateBadgeCounts() {
+            const okinawaCount = allStamps.filter(s => s.category === 'okinawa').length;
+            const othersCount = allStamps.filter(s => s.category === 'others').length;
+
+            document.getElementById('count-okinawa').textContent = okinawaCount;
+            document.getElementById('count-others').textContent = othersCount;
+            document.getElementById('total-count').textContent = `全 ${allStamps.length}作品 を配信中！`;
+        }
+
+        function switchCategory(category) {
+            currentCategory = category;
+
+            const okinawaTab = document.getElementById('tab-okinawa');
+            const othersTab = document.getElementById('tab-others');
+
+            if (category === 'okinawa') {
+                okinawaTab.classList.add('btn-active');
+                othersTab.classList.remove('btn-active');
+            } else {
+                othersTab.classList.add('btn-active');
+                okinawaTab.classList.remove('btn-active');
+            }
+
+            render();
+        }
+
+        function filterType(type) {
+            currentType = type;
+
+            ['all', 'sticker', 'animated-sticker', 'popup-sticker', 'effect-sticker', 'emoji', 'animated-emoji'].forEach(t => {
+                const btn = document.getElementById(`sub-${t}`);
+                if (btn) {
+                    if (t === type) {
+                        btn.classList.add('btn-active');
+                    } else {
+                        btn.classList.remove('btn-active');
+                    }
+                }
+            });
+
+            render();
+        }
+
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            render();
+        });
+
+        function showError() {
+            document.getElementById('loading-placeholder').classList.add('hidden');
+            document.getElementById('error-message').classList.remove('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('tab-okinawa').classList.add('btn-active');
+            document.getElementById('sub-all').classList.add('btn-active');
+
+            const stamps = await fetchSpreadsheetData();
+            allStamps = stamps;
+
+            document.getElementById('loading-placeholder').classList.add('hidden');
+            if (stamps && stamps.length > 0) {
+                render();
+            } else {
+                showError();
+            }
+        });
+    </script>
+</body>
+
+</html>
