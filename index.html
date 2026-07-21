@@ -345,6 +345,21 @@
             grid.classList.remove('hidden');
 
             filtered.forEach(stamp => {
+                // 📅 発売日からの経過日数を計算
+                const today = new Date();
+                const releaseDate = stamp.date ? new Date(stamp.date) : null;
+                const diffTime = releaseDate ? (today - releaseDate) : 0;
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                // 💡 ハートは10を超えて初めて観測される仕様
+                const isNew = diffDays >= 0 && diffDays <= 30;
+
+                // 1. 発売1ヶ月以内に観測（10超え）された ➔ 即「🔥急上昇」！
+                const isHot = isNew && stamp.hearts > 0;
+
+                // 2. 発売1ヶ月超で、さらに伸びて20以上蓄積 ➔ 「👑定番」！
+                const isClassic = !isNew && stamp.hearts >= 20;
+
                 let badgeLabel = 'スタンプ';
                 let badgeStyle = 'bg-pink-50 text-pink-600 border border-pink-100';
 
@@ -365,6 +380,15 @@
                     badgeStyle = 'bg-cyan-50 text-cyan-600 border border-cyan-100';
                 }
 
+                // 🏷️ トレンドバッジの生成
+                let trendBadge = '';
+                if (isHot) {
+                    trendBadge = `<span class="text-[10px] text-orange-600 font-bold bg-orange-50 border border-orange-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-fire text-orange-500 text-[9px]"></i>急上昇</span>`;
+                } else if (isClassic) {
+                    trendBadge = `<span class="text-[10px] text-amber-700 font-bold bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-crown text-amber-500 text-[9px]"></i>定番</span>`;
+                }
+
+                // ❤️ ハート数バッジ
                 const heartBadge = stamp.hearts > 0
                     ? `<span class="text-[10px] text-rose-500 font-bold bg-rose-50 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-heart text-[8px]"></i>${stamp.hearts}</span>`
                     : '';
@@ -382,8 +406,11 @@
                         </div>
                         <div class="p-3 flex flex-col justify-between flex-grow space-y-2">
                             <div class="space-y-1">
-                                <div class="flex items-center justify-between gap-1">
-                                    <span class="inline-block text-[9px] font-black px-1.5 py-0.5 rounded ${badgeStyle}">${badgeLabel}</span>
+                                <div class="flex items-center justify-between gap-1 flex-wrap">
+                                    <div class="flex items-center gap-1">
+                                        <span class="inline-block text-[9px] font-black px-1.5 py-0.5 rounded ${badgeStyle}">${badgeLabel}</span>
+                                        ${trendBadge}
+                                    </div>
                                     ${heartBadge}
                                 </div>
                                 <h3 class="text-xs font-bold text-gray-800 line-clamp-2 leading-snug h-[34px]">${stamp.title}</h3>
