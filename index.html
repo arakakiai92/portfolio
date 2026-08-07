@@ -77,7 +77,7 @@
                         <p class="text-[10px] text-green-100" id="total-count">ポートフォリオサイト (読み込み中...)</p>
                     </div>
                 </div>
-                <!-- 🟢 右上に追加：公式LINEへのリンクボタン -->
+                <!-- 🟢 右上：公式LINEへのリンクボタン -->
                 <a href="https://line.me/R/ti/p/@275wshid" target="_blank" rel="noopener noreferrer"
                     class="flex items-center gap-1 bg-white text-[#00C300] px-2.5 py-1 rounded-full text-[11px] font-black shadow-sm hover:bg-green-50 transition active:scale-95 select-none">
                     <i class="fa-brands fa-line text-sm text-[#00C300]"></i>公式LINE
@@ -85,7 +85,7 @@
             </div>
         </header>
 
-        <!-- メメインコンテンツ -->
+        <!-- メインコンテンツ -->
         <main class="p-4 space-y-4 flex-grow">
 
             <!-- 検索 & フィルターコントロールパネル -->
@@ -198,7 +198,6 @@
         let currentSort = 'newest';
         let searchQuery = '';
 
-        // 🛠️ 【修正】確実に118件のロードに成功していた元の安定URL形式（/export）に完全に戻します
         async function fetchTabCSV(gid) {
             const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}`;
             const response = await fetch(url);
@@ -250,7 +249,7 @@
                 });
 
                 const mappedData = masterRaw.map(row => {
-                    const obj = { id: '', title: '', url: '', type: 'sticker', img: '', date: '', hearts: 0 };
+                    const obj = {id: '', title: '', url: '', type: 'sticker', img: '', date: '', hearts: 0};
 
                     Object.keys(row).forEach(key => {
                         const k = key.trim().toLowerCase();
@@ -307,7 +306,7 @@
                 );
 
                 console.log('【配信中のみ】有効連動データ数:', mappedData.length);
-                return mappedData; // 🛠️ 【修正】構文エラーの原因だった場所を、正しい「return」に修正完了！
+                return mappedData;
             } catch (error) {
                 console.error('Error fetching sheets:', error);
                 showError();
@@ -345,19 +344,14 @@
             grid.classList.remove('hidden');
 
             filtered.forEach(stamp => {
-                // 📅 発売日からの経過日数を計算
                 const today = new Date();
                 const releaseDate = stamp.date ? new Date(stamp.date) : null;
                 const diffTime = releaseDate ? (today - releaseDate) : 0;
                 const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-                // 💡 ハートは10を超えて初めて観測される仕様
                 const isNew = diffDays >= 0 && diffDays <= 30;
 
-                // 1. 発売1ヶ月以内に観測（10超え）された ➔ 即「🔥急上昇」！
                 const isHot = isNew && stamp.hearts > 0;
-
-                // 2. 発売1ヶ月超で、さらに伸びて20以上蓄積 ➔ 「👑定番」！
                 const isClassic = !isNew && stamp.hearts >= 20;
 
                 let badgeLabel = 'スタンプ';
@@ -380,7 +374,6 @@
                     badgeStyle = 'bg-cyan-50 text-cyan-600 border border-cyan-100';
                 }
 
-                // 🏷️ トレンドバッジの生成
                 let trendBadge = '';
                 if (isHot) {
                     trendBadge = `<span class="text-[10px] text-orange-600 font-bold bg-orange-50 border border-orange-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-fire text-orange-500 text-[9px]"></i>急上昇</span>`;
@@ -388,7 +381,6 @@
                     trendBadge = `<span class="text-[10px] text-amber-700 font-bold bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-crown text-amber-500 text-[9px]"></i>定番</span>`;
                 }
 
-                // ❤️ ハート数バッジ
                 const heartBadge = stamp.hearts > 0
                     ? `<span class="text-[10px] text-rose-500 font-bold bg-rose-50 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-heart text-[8px]"></i>${stamp.hearts}</span>`
                     : '';
@@ -427,8 +419,11 @@
             });
         }
 
+        // 💾 状態の記憶処理を追加
         function changeSort(type) {
             currentSort = type;
+            localStorage.setItem('portfolio_sort', type);
+
             const btnNewest = document.getElementById('sort-newest');
             const btnHearts = document.getElementById('sort-hearts');
 
@@ -439,7 +434,7 @@
                 btnHearts.className = 'text-[#00C300] font-bold transition';
                 btnNewest.className = 'text-gray-400 hover:text-[#00C300] transition';
             }
-            render();
+            if (allStamps.length > 0) render();
         }
 
         function updateBadgeCounts() {
@@ -453,6 +448,7 @@
 
         function switchCategory(category) {
             currentCategory = category;
+            localStorage.setItem('portfolio_category', category);
 
             const okinawaTab = document.getElementById('tab-okinawa');
             const othersTab = document.getElementById('tab-others');
@@ -465,11 +461,12 @@
                 okinawaTab.classList.remove('btn-active');
             }
 
-            render();
+            if (allStamps.length > 0) render();
         }
 
         function filterType(type) {
             currentType = type;
+            localStorage.setItem('portfolio_type', type);
 
             ['all', 'sticker', 'animated-sticker', 'popup-sticker', 'effect-sticker', 'emoji', 'animated-emoji'].forEach(t => {
                 const btn = document.getElementById(`sub-${t}`);
@@ -482,7 +479,7 @@
                 }
             });
 
-            render();
+            if (allStamps.length > 0) render();
         }
 
         document.getElementById('search-input').addEventListener('input', (e) => {
@@ -495,9 +492,15 @@
             document.getElementById('error-message').classList.remove('hidden');
         }
 
+        // 🔄 初期読み込み時に保存されていた設定を自動復元
         document.addEventListener('DOMContentLoaded', async () => {
-            document.getElementById('tab-okinawa').classList.add('btn-active');
-            document.getElementById('sub-all').classList.add('btn-active');
+            const savedSort = localStorage.getItem('portfolio_sort') || 'newest';
+            const savedCategory = localStorage.getItem('portfolio_category') || 'okinawa';
+            const savedType = localStorage.getItem('portfolio_type') || 'all';
+
+            changeSort(savedSort);
+            switchCategory(savedCategory);
+            filterType(savedType);
 
             const stamps = await fetchSpreadsheetData();
             allStamps = stamps;
