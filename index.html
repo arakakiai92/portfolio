@@ -190,6 +190,9 @@
         const SPREADSHEET_ID = '1sZ-NHSGmmXdvwDbDnsZtWSNdGt-4W3gGxhCs6ZOdp5s';
         const GID_MASTER = '0';
         const GID_HEART = '414139365';
+
+        // 🛑 個別で非表示にしたいItem IDがあればここに入力（例: ['123456', '789012']）
+        const EXCLUDE_ITEM_IDS = ['41915904', '42134265', '43204866', '43309479', '43522568'];
         // =======================================================
 
         let allStamps = [];
@@ -249,7 +252,9 @@
                 });
 
                 const mappedData = masterRaw.map(row => {
-                    const obj = {id: '', title: '', url: '', type: 'sticker', img: '', date: '', hearts: 0};
+                    const obj = { id: '', title: '', url: '', type: 'sticker', img: '', date: '', status: '', rowText: '', hearts: 0 };
+
+                    obj.rowText = Object.values(row).join(' ');
 
                     Object.keys(row).forEach(key => {
                         const k = key.trim().toLowerCase();
@@ -263,6 +268,8 @@
                             obj.title = val;
                         } else if (k.includes('url') || k.includes('リンク') || k.includes('ストア')) {
                             obj.url = val;
+                        } else if (k.includes('ステータス') || k.includes('状態') || k.includes('status')) {
+                            obj.status = val;
                         } else if (k.includes('カテゴリ') || k.includes('type') || k.includes('種類')) {
                             if (val.includes('エフェクトスタンプ')) {
                                 obj.type = 'effect-sticker';
@@ -297,13 +304,27 @@
                     obj.category = isOkinawa ? 'okinawa' : 'others';
 
                     return obj;
-                }).filter(item =>
-                    item.title &&
-                    item.url &&
-                    item.type !== 'theme' &&
-                    !item.title.includes('販売終了') &&
-                    !item.title.includes('販売停止')
-                );
+                }).filter(item => {
+                    // 1. 基本必須項目（タイトル・URL）のチェック
+                    if (!item.title || !item.url) return false;
+
+                    // 2. 着せ替えは除外
+                    if (item.type === 'theme') return false;
+
+                    // 3. 📅 販売開始日が未入力（空欄）の販売前データは除外
+                    if (!item.date || item.date.trim() === '') return false;
+
+                    // 4. 🛑 手動除外リストに含まれるIDは除外
+                    if (EXCLUDE_ITEM_IDS.length > 0 && EXCLUDE_ITEM_IDS.includes(item.id)) return false;
+
+                    // 5. 停止・終了・審査中などのステータス・文言除外
+                    const stopKeywords = ['販売停止', '販売終了', '停止中', '販売中止', '非公開', '審査中', 'リジェクト', '申請中', '削除'];
+                    if (stopKeywords.some(kw => item.title.includes(kw))) return false;
+                    if (item.status && stopKeywords.some(kw => item.status.includes(kw))) return false;
+                    if (item.rowText.includes('販売停止') || item.rowText.includes('販売終了') || item.rowText.includes('販売中止')) return false;
+
+                    return true;
+                });
 
                 console.log('【配信中のみ】有効連動データ数:', mappedData.length);
                 return mappedData;
@@ -419,7 +440,6 @@
             });
         }
 
-        // 💾 状態の記憶処理を追加
         function changeSort(type) {
             currentSort = type;
             localStorage.setItem('portfolio_sort', type);
@@ -492,7 +512,6 @@
             document.getElementById('error-message').classList.remove('hidden');
         }
 
-        // 🔄 初期読み込み時に保存されていた設定を自動復元
         document.addEventListener('DOMContentLoaded', async () => {
             const savedSort = localStorage.getItem('portfolio_sort') || 'newest';
             const savedCategory = localStorage.getItem('portfolio_category') || 'okinawa';
