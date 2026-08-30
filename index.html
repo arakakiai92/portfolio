@@ -191,8 +191,8 @@
         const GID_MASTER = '0';
         const GID_HEART = '414139365';
 
-        // 🛑 個別で非表示にしたいItem IDがあればここに入力（例: ['123456', '789012']）
-        const EXCLUDE_ITEM_IDS = ['41915904', '42134265', '43337073', '43204866', '43309479', '43522568', '540497'];
+        // 🛑 個別で非表示にしたいItem IDがあればここに入力
+        const EXCLUDE_ITEM_IDS = [];
         // =======================================================
 
         let allStamps = [];
@@ -294,12 +294,20 @@
                     obj.hearts = heartMap[obj.id] || 0;
 
                     const titleText = (obj.title || '').toLowerCase();
-                    const isOkinawa = titleText.includes('沖縄') ||
+
+                    // 🌺 沖縄系キーワード判定（マヤー・方言・琉球・やんばるなどを追加）
+                    const isOkinawa =
+                        titleText.includes('沖縄') ||
                         titleText.includes('okinawa') ||
                         titleText.includes('うちなー') ||
+                        titleText.includes('ウチナー') ||
                         titleText.includes('シーサー') ||
                         titleText.includes('shisa') ||
-                        titleText.includes('ウチナー');
+                        titleText.includes('方言') ||
+                        titleText.includes('マヤー') ||
+                        titleText.includes('まやー') ||
+                        titleText.includes('琉球') ||
+                        titleText.includes('やんばる');
 
                     obj.category = isOkinawa ? 'okinawa' : 'others';
 
@@ -311,10 +319,10 @@
                     // 2. 着せ替えは除外
                     if (item.type === 'theme') return false;
 
-                    // 3. 📅 販売開始日が未入力（空欄）の販売前データは除外
+                    // 3. 販売開始日が未入力（空欄）の販売前データは除外
                     if (!item.date || item.date.trim() === '') return false;
 
-                    // 4. 🛑 手動除外リストに含まれるIDは除外
+                    // 4. 手動除外リストに含まれるIDは除外
                     if (EXCLUDE_ITEM_IDS.length > 0 && EXCLUDE_ITEM_IDS.includes(item.id)) return false;
 
                     // 5. 停止・終了・審査中などのステータス・文言除外
