@@ -364,10 +364,18 @@
                 return matchCategory && matchType && matchSearch;
             });
 
+            // 🔄 並び替えロジック
             if (currentSort === 'newest') {
                 filtered.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
             } else if (currentSort === 'hearts') {
-                filtered.sort((a, b) => b.hearts - a.hearts);
+                filtered.sort((a, b) => {
+                    // ハート数が異なる場合はハート数が多い順
+                    if (b.hearts !== a.hearts) {
+                        return b.hearts - a.hearts;
+                    }
+                    // ハート数が同じ（0同士含む）場合は、販売開始日が新しい順
+                    return new Date(b.date || 0) - new Date(a.date || 0);
+                });
             }
 
             updateBadgeCounts();
