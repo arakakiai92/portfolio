@@ -98,14 +98,18 @@
                         class="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00C300] focus:border-[#00C300] transition">
                 </div>
 
-                <!-- メインタブ：沖縄系 ⇄ その他 -->
-                <div class="flex gap-2">
+                <!-- 🌺 メインタブ：沖縄系 ⇄ 🌸 敬語系 ⇄ ⭐️ その他 -->
+                <div class="flex gap-1.5">
                     <button onclick="switchCategory('okinawa')" id="tab-okinawa"
-                        class="flex-1 py-2 text-xs md:text-sm font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-1.5">
-                        🌺 沖縄系 (<span id="count-okinawa">0</span>)
+                        class="flex-1 py-2 px-1 text-[11px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-1">
+                        🌺 沖縄 (<span id="count-okinawa">0</span>)
+                    </button>
+                    <button onclick="switchCategory('keigo')" id="tab-keigo"
+                        class="flex-1 py-2 px-1 text-[11px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-1">
+                        🌸 敬語 (<span id="count-keigo">0</span>)
                     </button>
                     <button onclick="switchCategory('others')" id="tab-others"
-                        class="flex-1 py-2 text-xs md:text-sm font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-1.5">
+                        class="flex-1 py-2 px-1 text-[11px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-1">
                         ⭐️ その他 (<span id="count-others">0</span>)
                     </button>
                 </div>
@@ -303,7 +307,7 @@
 
                     const titleText = (obj.title || '').toLowerCase();
 
-                    // 🌺 沖縄系キーワード判定
+                    // 🌺 1. 沖縄系キーワード判定
                     const isOkinawa =
                         titleText.includes('沖縄') ||
                         titleText.includes('okinawa') ||
@@ -317,7 +321,23 @@
                         titleText.includes('琉球') ||
                         titleText.includes('やんばる');
 
-                    obj.category = isOkinawa ? 'okinawa' : 'others';
+                    // 🌸 2. 敬語系キーワード判定
+                    const isKeigo =
+                        titleText.includes('敬語') ||
+                        titleText.includes('丁寧') ||
+                        titleText.includes('ビジネス') ||
+                        titleText.includes('仕事') ||
+                        titleText.includes('pta') ||
+                        titleText.includes('役員') ||
+                        titleText.includes('連絡');
+
+                    if (isOkinawa) {
+                        obj.category = 'okinawa';
+                    } else if (isKeigo) {
+                        obj.category = 'keigo';
+                    } else {
+                        obj.category = 'others';
+                    }
 
                     return obj;
                 }).filter(item => {
@@ -369,11 +389,9 @@
                 filtered.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
             } else if (currentSort === 'hearts') {
                 filtered.sort((a, b) => {
-                    // ハート数が異なる場合はハート数が多い順
                     if (b.hearts !== a.hearts) {
                         return b.hearts - a.hearts;
                     }
-                    // ハート数が同じ（0同士含む）場合は、販売開始日が新しい順
                     return new Date(b.date || 0) - new Date(a.date || 0);
                 });
             }
@@ -484,9 +502,11 @@
 
         function updateBadgeCounts() {
             const okinawaCount = allStamps.filter(s => s.category === 'okinawa').length;
+            const keigoCount = allStamps.filter(s => s.category === 'keigo').length;
             const othersCount = allStamps.filter(s => s.category === 'others').length;
 
             document.getElementById('count-okinawa').textContent = okinawaCount;
+            document.getElementById('count-keigo').textContent = keigoCount;
             document.getElementById('count-others').textContent = othersCount;
             document.getElementById('total-count').textContent = `全 ${allStamps.length}作品 を配信中！`;
         }
@@ -495,16 +515,16 @@
             currentCategory = category;
             localStorage.setItem('portfolio_category', category);
 
-            const okinawaTab = document.getElementById('tab-okinawa');
-            const othersTab = document.getElementById('tab-others');
-
-            if (category === 'okinawa') {
-                okinawaTab.classList.add('btn-active');
-                othersTab.classList.remove('btn-active');
-            } else {
-                othersTab.classList.add('btn-active');
-                okinawaTab.classList.remove('btn-active');
-            }
+            ['okinawa', 'keigo', 'others'].forEach(cat => {
+                const tab = document.getElementById(`tab-${cat}`);
+                if (tab) {
+                    if (cat === category) {
+                        tab.classList.add('btn-active');
+                    } else {
+                        tab.classList.remove('btn-active');
+                    }
+                }
+            });
 
             if (allStamps.length > 0) render();
         }
