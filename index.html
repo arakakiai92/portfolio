@@ -191,8 +191,16 @@
         const GID_MASTER = '0';
         const GID_HEART = '414139365';
 
-        // 🛑 個別で非表示にしたいItem IDがあればここに入力
-        const EXCLUDE_ITEM_IDS = [];
+        // 🛑 非表示にするItem IDリスト
+        const EXCLUDE_ITEM_IDS = [
+            '41915904',
+            '42134265',
+            '42894180',
+            '43204866',
+            '43309479',
+            '43522568',
+            '540497'
+        ];
         // =======================================================
 
         let allStamps = [];
@@ -295,7 +303,7 @@
 
                     const titleText = (obj.title || '').toLowerCase();
 
-                    // 🌺 沖縄系キーワード判定（マヤー・方言・琉球・やんばるなどを追加）
+                    // 🌺 沖縄系キーワード判定
                     const isOkinawa =
                         titleText.includes('沖縄') ||
                         titleText.includes('okinawa') ||
@@ -323,7 +331,8 @@
                     if (!item.date || item.date.trim() === '') return false;
 
                     // 4. 手動除外リストに含まれるIDは除外
-                    if (EXCLUDE_ITEM_IDS.length > 0 && EXCLUDE_ITEM_IDS.includes(item.id)) return false;
+                    const normalizedId = String(item.id).trim();
+                    if (EXCLUDE_ITEM_IDS.includes(normalizedId)) return false;
 
                     // 5. 停止・終了・審査中などのステータス・文言除外
                     const stopKeywords = ['販売停止', '販売終了', '停止中', '販売中止', '非公開', '審査中', 'リジェクト', '申請中', '削除'];
