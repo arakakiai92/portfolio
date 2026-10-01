@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ARAKAKIAIworks | LINE Stamp Portfolio</title>
+
+    <!-- ファビコンにがま口シーサーをセット -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="favicon.png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for beautiful icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- PapaParse for robust CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 携帯（スマホ）特化のコンテナ設計 */
+        .phone-container {
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            border-left: 1px solid #f1f5f9;
+            border-right: 1px solid #f1f5f9;
+        }
+
+        /* 分析アプリと同一トーン of ボタンアクティブ状態 */
+        .btn-active {
+            background-color: #00C300 !important;
+            color: #ffffff !important;
+            border-color: #00C300 !important;
+        }
+
+        /* 2列カードのイメージ比率維持 */
+        .img-aspect-square {
+            aspect-ratio: 1 / 1;
+        }
+
+        /* テキストの2行省略 */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* 横スクロールバー非表示 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="flex justify-center items-start min-h-screen">
+
+    <div class="phone-container">
+
+        <!-- ヘッダー (売上分析アプリのデザインと完全一致) -->
+        <header class="bg-[#00C300] text-white shadow-md sticky top-0 z-50">
+            <div class="px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center">
+                    <!-- がま口なしの可愛いシーサーアイコン (fallback対応) -->
+                    <img src="top-left_2.png" alt="シーサーアイコン" class="h-12 w-auto block object-contain"
+                        onerror="this.onerror=null; this.src='top-left.png';">
+                    <div class="ml-2.5">
+                        <h1 class="text-sm font-bold leading-tight">ARAKAKIAIworks</h1>
+                        <p class="text-[10px] text-green-100" id="total-count">ポートフォリオサイト (読み込み中...)</p>
+                    </div>
+                </div>
+                <!-- 🟢 右上：公式LINEへのリンクボタン -->
+                <a href="https://line.me/R/ti/p/@275wshid" target="_blank" rel="noopener noreferrer"
+                    class="flex items-center gap-1 bg-white text-[#00C300] px-2.5 py-1 rounded-full text-[11px] font-black shadow-sm hover:bg-green-50 transition active:scale-95 select-none">
+                    <i class="fa-brands fa-line text-sm text-[#00C300]"></i>公式LINE
+                </a>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main class="p-4 space-y-4 flex-grow">
+
+            <!-- 📖 雑誌風 巻頭特集ピックアップバナー（横スクロール） -->
+            <div class="space-y-1.5">
+                <div class="flex items-center justify-between px-1">
+                    <span class="text-[11px] font-black text-gray-500 flex items-center gap-1 tracking-wider">
+                        <i class="fa-solid fa-sparkles text-amber-500"></i> FEATURE ARTICLES
+                    </span>
+                    <span id="feature-status-text" class="text-[10px] text-[#00C300] font-bold hidden flex items-center gap-1">
+                        <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#00C300] animate-pulse"></span>特集絞り込み中
+                    </span>
+                </div>
+                <div class="flex gap-2.5 overflow-x-auto pb-1 no-scrollbar snap-x">
+                    <!-- 特集カード 1: 今月の推し -->
+                    <button onclick="toggleFeature('recommended')" id="feature-btn-recommended"
+                        class="snap-start shrink-0 w-[145px] p-2.5 rounded-xl bg-gradient-to-br from-amber-500 to-orange-400 text-white shadow-sm hover:shadow transition active:scale-95 text-left flex flex-col justify-between border-2 border-transparent">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[9px] font-bold uppercase tracking-wider bg-black/20 px-1.5 py-0.5 rounded-full">Pick Up</span>
+                            <i class="fa-solid fa-star text-yellow-200 text-xs"></i>
+                        </div>
+                        <div class="mt-2">
+                            <p class="text-[10px] text-amber-100 font-bold leading-tight">作者イチオシ！</p>
+                            <h4 class="text-xs font-black leading-tight mt-0.5">今月の推し特集</h4>
+                        </div>
+                    </button>
+
+                    <!-- 特集カード 2: プレミアム解禁 -->
+                    <button onclick="toggleFeature('premium')" id="feature-btn-premium"
+                        class="snap-start shrink-0 w-[145px] p-2.5 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-500 text-white shadow-sm hover:shadow transition active:scale-95 text-left flex flex-col justify-between border-2 border-transparent">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[9px] font-bold uppercase tracking-wider bg-black/20 px-1.5 py-0.5 rounded-full">LINE Premium</span>
+                            <i class="fa-solid fa-crown text-amber-300 text-xs"></i>
+                        </div>
+                        <div class="mt-2">
+                            <p class="text-[10px] text-purple-200 font-bold leading-tight">使い放題に追加！</p>
+                            <h4 class="text-xs font-black leading-tight mt-0.5">プレミアム解禁特集</h4>
+                        </div>
+                    </button>
+
+                    <!-- 特集カード 3: 沖縄シリーズ -->
+                    <button onclick="toggleFeature('okinawa')" id="feature-btn-okinawa"
+                        class="snap-start shrink-0 w-[145px] p-2.5 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-sm hover:shadow transition active:scale-95 text-left flex flex-col justify-between border-2 border-transparent">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[9px] font-bold uppercase tracking-wider bg-black/20 px-1.5 py-0.5 rounded-full">Local Culture</span>
+                            <i class="fa-solid fa-sun text-yellow-200 text-xs"></i>
+                        </div>
+                        <div class="mt-2">
+                            <p class="text-[10px] text-emerald-100 font-bold leading-tight">島言葉＆シーサー</p>
+                            <h4 class="text-xs font-black leading-tight mt-0.5">沖縄方言ワールド</h4>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- 特集絞り込み中のリセットバー -->
+                <div id="feature-reset-bar" class="hidden bg-gray-100 px-3 py-1.5 rounded-lg flex items-center justify-between text-xs">
+                    <span class="text-gray-700 font-bold flex items-center gap-1" id="feature-reset-label">
+                        <i class="fa-solid fa-filter text-[#00C300]"></i> 特集を表示中
+                    </span>
+                    <button onclick="clearFeature()" class="text-gray-500 hover:text-rose-500 font-bold flex items-center gap-0.5">
+                        <i class="fa-solid fa-xmark"></i> 解除
+                    </button>
+                </div>
+            </div>
+
+            <!-- 検索 & フィルターコントロールパネル -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3.5">
+                <!-- 検索バー -->
+                <div class="relative">
+                    <i
+                        class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="search-input" placeholder="キーワードで作品を検索..."
+                        class="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00C300] focus:border-[#00C300] transition">
+                </div>
+
+                <!-- 🌟 メインタブ：✨ 推し ⇄ 🌺 沖縄 ⇄ 🌸 敬語 ⇄ ⭐️ その他 -->
+                <div class="flex gap-1">
+                    <button onclick="switchCategory('recommended')" id="tab-recommended"
+                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
+                        ✨ 推し (<span id="count-recommended">0</span>)
+                    </button>
+                    <button onclick="switchCategory('okinawa')" id="tab-okinawa"
+                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
+                        🌺 沖縄 (<span id="count-okinawa">0</span>)
+                    </button>
+                    <button onclick="switchCategory('keigo')" id="tab-keigo"
+                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
+                        🌸 敬語 (<span id="count-keigo">0</span>)
+                    </button>
+                    <button onclick="switchCategory('others')" id="tab-others"
+                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
+                        ⭐️ 他 (<span id="count-others">0</span>)
+                    </button>
+                </div>
+
+                <!-- 📅 最新順 ⇄ ❤️️ 人気順 切り替えスイッチパネル -->
+                <div
+                    class="flex items-center justify-end gap-3 text-xs border-t border-gray-100 pt-2 text-gray-400 font-bold">
+                    <span><i class="fa-solid fa-arrows-up-down text-[10px]"></i> 並び替え:</span>
+                    <button onclick="changeSort('newest')" id="sort-newest" class="text-[#00C300] transition">📅
+                        最新順</button>
+                    <span class="text-gray-200">|</span>
+                    <button onclick="changeSort('hearts')" id="sort-hearts" class="hover:text-[#00C300] transition">❤️
+                        人気順</button>
+                </div>
+
+                <!-- サブフィルター：すべて ⇄ 各種カテゴリ -->
+                <div class="flex flex-wrap justify-start gap-1.5 border-t border-gray-100 pt-3">
+                    <button onclick="filterType('all')" id="sub-all"
+                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">すべて</button>
+                    <button onclick="filterType('sticker')" id="sub-sticker"
+                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">スタンプ</button>
+                    <button onclick="filterType('animated-sticker')" id="sub-animated-sticker"
+                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">動くスタンプ</button>
+                    <button onclick="filterType('popup-sticker')" id="sub-popup-sticker"
+                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">大きく動くスタンプ</button>
+                    <button onclick="filterType('effect-sticker')" id="sub-effect-sticker"
+                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">背景が大きく動くスタンプ</button>
+                    <button onclick="filterType('emoji')" id="sub-emoji"
+                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">絵文字</button>
+                    <button onclick="filterType('animated-emoji')" id="sub-animated-emoji"
+                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">動く絵文字</button>
+                </div>
+            </div>
+
+            <!-- スケルトンローディング表示 -->
+            <div id="loading-placeholder" class="grid grid-cols-2 gap-3">
+                <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex flex-col space-y-2">
+                    <div class="img-aspect-square bg-gray-100 rounded-lg animate-pulse"></div>
+                    <div class="h-3 bg-gray-100 rounded w-1/3 animate-pulse"></div>
+                    <div class="h-4 bg-gray-100 rounded w-5/6 animate-pulse"></div>
+                </div>
+            </div>
+
+            <!-- エラー表示 -->
+            <div id="error-message"
+                class="hidden text-center py-12 px-4 space-y-3 bg-white rounded-xl border border-gray-200 shadow-sm">
+                <i class="fa-solid fa-circle-exclamation text-rose-500 text-3xl"></i>
+                <h3 class="font-bold text-gray-800">データの読み込みに失敗しました</h3>
+                <p class="text-xs text-gray-500 leading-relaxed max-w-[280px] mx-auto">
+                    スプレッドシートの閲覧設定が「リンクを知っている全員」になっているか、IDが正しいかご確認ください。</p>
+            </div>
+
+            <!-- 空状態表示 -->
+            <div id="empty-state"
+                class="hidden text-center py-16 bg-white rounded-xl border border-gray-200 shadow-sm space-y-2">
+                <i class="fa-regular fa-face-frown text-3xl text-gray-300"></i>
+                <p class="text-sm font-bold text-gray-400">該当する作品が見つかりませんでした</p>
+            </div>
+
+            <!-- 作品グリッド -->
+            <div id="stamp-grid" class="grid grid-cols-2 gap-3 hidden">
+                <!-- JavaScriptにより動的生成されます -->
+            </div>
+
+        </main>
+
+        <!-- フッター -->
+        <footer
+            class="p-4 text-xs text-gray-400 border-t border-gray-100 mt-auto flex justify-between items-center bg-gray-50">
+            <p class="leading-tight">
+                © 2026 <a href="https://store.line.me/search/ja?q=arakakiai" target="_blank" rel="noopener noreferrer"
+                    class="text-[#00C300] hover:text-[#009900] font-bold">ARAKAKIAIworks</a>.<br>All Rights Reserved.
+            </p>
+            <img src="bottom-right_2.png" alt="シーサーロゴ" class="h-10 w-auto object-contain block"
+                onerror="this.onerror=null; this.src='bottom-right.png';">
+        </footer>
+
+    </div>
+
+    <script>
+        // ==================== CONFIGURATION ====================
+        const SPREADSHEET_ID = '1sZ-NHSGmmXdvwDbDnsZtWSNdGt-4W3gGxhCs6ZOdp5s';
+        const GID_MASTER = '0';
+        const GID_HEART = '414139365';
+
+        // 🛑 非表示にするItem IDリスト
+        const EXCLUDE_ITEM_IDS = [
+            '41915904',
+            '42134265',
+            '42894180',
+            '43204866',
+            '43309479',
+            '43522568',
+            '540497',
+            '47126076'
+        ];
+        // =======================================================
+
+        let allStamps = [];
+        let currentCategory = 'okinawa';
+        let currentType = 'all';
+        let currentSort = 'newest';
+        let searchQuery = '';
+        let activeFeature = null; // 📖 現在適用されている特集フィルター ('recommended', 'premium', 'okinawa')
+
+        async function fetchTabCSV(gid) {
+            const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Fetch failed for gid: ${gid}`);
+            return await response.text();
+        }
+
+        function parseCSVText(csvText) {
+            return new Promise((resolve) => {
+                Papa.parse(csvText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: function (results) {
+                        resolve(results.data);
+                    },
+                    error: function () {
+                        resolve([]);
+                    }
+                });
+            });
+        }
+
+        async function fetchSpreadsheetData() {
+            try {
+                const [masterRaw, heartRaw] = await Promise.all([
+                    fetchTabCSV(GID_MASTER).then(parseCSVText),
+                    fetchTabCSV(GID_HEART).then(parseCSVText)
+                ]);
+
+                const heartMap = {};
+                heartRaw.forEach(row => {
+                    let itemId = '';
+                    let heartCount = 0;
+
+                    Object.keys(row).forEach(key => {
+                        const k = key.trim().toLowerCase();
+                        const val = row[key] ? row[key].trim() : '';
+                        if (k.includes('item id') || k.includes('id')) {
+                            itemId = val;
+                        }
+                        if (k.includes('ハート') || k.includes('heart')) {
+                            heartCount = parseInt(val, 10) || 0;
+                        }
+                    });
+
+                    if (itemId) {
+                        heartMap[itemId] = heartCount;
+                    }
+                });
+
+                const mappedData = masterRaw.map(row => {
+                    const obj = { id: '', title: '', url: '', type: 'sticker', img: '', date: '', status: '', pickMonth: '', premiumMonth: '', rowText: '', hearts: 0, isRecommended: false, isPremium: false };
+
+                    obj.rowText = Object.values(row).join(' ');
+
+                    Object.keys(row).forEach(key => {
+                        const k = key.trim().toLowerCase();
+                        const val = row[key] ? row[key].trim() : '';
+
+                        if (k.includes('item id') || k.includes('id')) {
+                            obj.id = val;
+                        } else if (k.includes('サムネイル') || k.includes('画像') || k.includes('img')) {
+                            obj.img = val;
+                        } else if (k.includes('タイトル') || k.includes('title') || k.includes('作品名')) {
+                            obj.title = val;
+                        } else if (k.includes('url') || k.includes('リンク') || k.includes('ストア')) {
+                            obj.url = val;
+                        } else if (k.includes('ステータス') || k.includes('状態') || k.includes('status')) {
+                            obj.status = val;
+                        } else if (k.includes('推し') || k.includes('おすすめ') || k.includes('オススメ') || k.includes('ピックアップ')) {
+                            // 🌟 G列「推し月」の入力を取得
+                            obj.pickMonth = val.replace('/', '.').replace('-', '.');
+                        } else if (k.includes('プレミアム') || k.includes('premium')) {
+                            // 👑 H列「プレミアム月」の入力を取得
+                            obj.premiumMonth = val.replace('/', '.').replace('-', '.');
+                        } else if (k.includes('カテゴリ') || k.includes('type') || k.includes('種類')) {
+                            if (val.includes('エフェクトスタンプ')) {
+                                obj.type = 'effect-sticker';
+                            } else if (val.includes('ポップアップスタンプ')) {
+                                obj.type = 'popup-sticker';
+                            } else if (val.includes('動くスタンプ') || val.includes('アニメーションスタンプ')) {
+                                obj.type = 'animated-sticker';
+                            } else if (val.includes('動く絵文字') || val.includes('アニメーション絵文字')) {
+                                obj.type = 'animated-emoji';
+                            } else if (val.includes('絵文字')) {
+                                obj.type = 'emoji';
+                            } else if (val.includes('着せ替え') || val.includes('着せかえ') || val.includes('テーマ')) {
+                                obj.type = 'theme';
+                            } else {
+                                obj.type = 'sticker';
+                            }
+                        } else if (k.includes('開始日') || k.includes('日付') || k.includes('date')) {
+                            obj.date = val;
+                        }
+                    });
+
+                    obj.hearts = heartMap[obj.id] || 0;
+
+                    // ✨ 推し判定 & 👑 プレミアム判定
+                    obj.isRecommended = Boolean(obj.pickMonth && obj.pickMonth.trim() !== '');
+                    obj.isPremium = Boolean(obj.premiumMonth && obj.premiumMonth.trim() !== '');
+
+                    const titleText = (obj.title || '').toLowerCase();
+
+                    // 🌺 1. 沖縄系キーワード判定
+                    const isOkinawa =
+                        titleText.includes('沖縄') ||
+                        titleText.includes('okinawa') ||
+                        titleText.includes('うちなー') ||
+                        titleText.includes('ウチナー') ||
+                        titleText.includes('シーサー') ||
+                        titleText.includes('shisa') ||
+                        titleText.includes('方言') ||
+                        titleText.includes('マヤー') ||
+                        titleText.includes('まやー') ||
+                        titleText.includes('琉球') ||
+                        titleText.includes('やんばる');
+
+                    // 🌸 2. 敬語系キーワード判定
+                    const isKeigo =
+                        titleText.includes('敬語') ||
+                        titleText.includes('丁寧') ||
+                        titleText.includes('ビジネス') ||
+                        titleText.includes('仕事') ||
+                        titleText.includes('pta') ||
+                        titleText.includes('役員') ||
+                        titleText.includes('連絡');
+
+                    if (isOkinawa) {
+                        obj.category = 'okinawa';
+                    } else if (isKeigo) {
+                        obj.category = 'keigo';
+                    } else {
+                        obj.category = 'others';
+                    }
+
+                    return obj;
+                }).filter(item => {
+                    if (!item.title || !item.url) return false;
+                    if (item.type === 'theme') return false;
+                    if (!item.date || item.date.trim() === '') return false;
+
+                    const normalizedId = String(item.id).trim();
+                    if (EXCLUDE_ITEM_IDS.includes(normalizedId)) return false;
+
+                    const stopKeywords = ['販売停止', '販売終了', '停止中', '販売中止', '非公開', '審査中', 'リジェクト', '申請中', '削除'];
+                    if (stopKeywords.some(kw => item.title.includes(kw))) return false;
+                    if (item.status && stopKeywords.some(kw => item.status.includes(kw))) return false;
+                    if (item.rowText.includes('販売停止') || item.rowText.includes('販売終了') || item.rowText.includes('販売中止')) return false;
+
+                    return true;
+                });
+
+                console.log('【配信中のみ】有効連動データ数:', mappedData.length);
+                return mappedData;
+            } catch (error) {
+                console.error('Error fetching sheets:', error);
+                showError();
+                return [];
+            }
+        }
+
+        function render() {
+            const grid = document.getElementById('stamp-grid');
+            const emptyState = document.getElementById('empty-state');
+            grid.innerHTML = '';
+
+            let filtered = allStamps.filter(stamp => {
+                // 📖 特集モードが発動している場合の絞り込み
+                if (activeFeature === 'recommended') {
+                    if (!stamp.isRecommended) return false;
+                } else if (activeFeature === 'premium') {
+                    if (!stamp.isPremium) return false;
+                } else if (activeFeature === 'okinawa') {
+                    if (stamp.category !== 'okinawa') return false;
+                } else {
+                    // 通常モード：カテゴリタブの選択に準拠
+                    if (currentCategory === 'recommended') {
+                        if (!stamp.isRecommended) return false;
+                    } else {
+                        if (stamp.category !== currentCategory) return false;
+                    }
+                }
+
+                const matchType = currentType === 'all' || stamp.type === currentType;
+                const matchSearch = searchQuery === '' || stamp.title.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchType && matchSearch;
+            });
+
+            // 🔄 並び替えロジック
+            if (currentSort === 'newest') {
+                filtered.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            } else if (currentSort === 'hearts') {
+                filtered.sort((a, b) => {
+                    if (b.hearts !== a.hearts) {
+                        return b.hearts - a.hearts;
+                    }
+                    return new Date(b.date || 0) - new Date(a.date || 0);
+                });
+            }
+
+            updateBadgeCounts();
+
+            if (filtered.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.classList.remove('hidden');
+
+            filtered.forEach(stamp => {
+                const today = new Date();
+                const releaseDate = stamp.date ? new Date(stamp.date) : null;
+                const diffTime = releaseDate ? (today - releaseDate) : 0;
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                const isNew = diffDays >= 0 && diffDays <= 30;
+
+                const isHot = isNew && stamp.hearts > 0;
+                const isClassic = !isNew && stamp.hearts >= 20;
+
+                let badgeLabel = 'スタンプ';
+                let badgeStyle = 'bg-pink-50 text-pink-600 border border-pink-100';
+
+                if (stamp.type === 'emoji') {
+                    badgeLabel = '絵文字';
+                    badgeStyle = 'bg-purple-50 text-purple-600 border border-purple-100';
+                } else if (stamp.type === 'animated-sticker') {
+                    badgeLabel = '動くスタンプ';
+                    badgeStyle = 'bg-rose-50 text-rose-600 border border-rose-100';
+                } else if (stamp.type === 'animated-emoji') {
+                    badgeLabel = '動く絵文字';
+                    badgeStyle = 'bg-indigo-50 text-indigo-600 border border-indigo-100';
+                } else if (stamp.type === 'popup-sticker') {
+                    badgeLabel = '大きく動くスタンプ';
+                    badgeStyle = 'bg-amber-50 text-amber-600 border border-amber-100';
+                } else if (stamp.type === 'effect-sticker') {
+                    badgeLabel = '背景が大きく動くスタンプ';
+                    badgeStyle = 'bg-cyan-50 text-cyan-600 border border-cyan-100';
+                }
+
+                // ✨ 推しバッジ
+                const recommendBadge = stamp.isRecommended
+                    ? `<span class="text-[10px] text-amber-700 font-bold bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-star text-amber-500 text-[9px]"></i>${stamp.pickMonth} 推し</span>`
+                    : '';
+
+                // 👑 プレミアムバッジ
+                const premiumBadge = stamp.isPremium
+                    ? `<span class="text-[10px] text-purple-700 font-bold bg-purple-50 border border-purple-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-crown text-purple-500 text-[9px]"></i>${stamp.premiumMonth} プレミアム</span>`
+                    : '';
+
+                // 🏷️ 急上昇・定番バッジ
+                let trendBadge = '';
+                if (isHot) {
+                    trendBadge = `<span class="text-[10px] text-orange-600 font-bold bg-orange-50 border border-orange-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-fire text-orange-500 text-[9px]"></i>急上昇</span>`;
+                } else if (isClassic) {
+                    trendBadge = `<span class="text-[10px] text-amber-700 font-bold bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-crown text-amber-500 text-[9px]"></i>定番</span>`;
+                }
+
+                const heartBadge = stamp.hearts > 0
+                    ? `<span class="text-[10px] text-rose-500 font-bold bg-rose-50 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-heart text-[8px]"></i>${stamp.hearts}</span>`
+                    : '';
+
+                const dateHtml = stamp.date
+                    ? `<p class="text-[10px] text-gray-400 font-bold flex items-center gap-1 pt-1"><i class="fa-regular fa-calendar-days text-[9px] text-gray-400"></i>${stamp.date} 発売</p>`
+                    : '';
+
+                const card = `
+                    <a href="${stamp.url}" target="_blank" rel="noopener" 
+                       class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col hover:shadow-md transition duration-200 active:scale-[0.98]">
+                        <div class="img-aspect-square bg-white flex items-center justify-center p-3 border-b border-gray-100">
+                            <img src="${stamp.img}" alt="${stamp.title}" loading="lazy" class="max-w-full max-h-full object-contain"
+                                 onerror="this.onerror=null; this.src='https://placehold.co/150x150/ffffff/cccccc?text=LINE';">
+                        </div>
+                        <div class="p-3 flex flex-col justify-between flex-grow space-y-2">
+                            <div class="space-y-1">
+                                <div class="flex items-center justify-between gap-1 flex-wrap">
+                                    <div class="flex items-center gap-1 flex-wrap">
+                                        <span class="inline-block text-[9px] font-black px-1.5 py-0.5 rounded ${badgeStyle}">${badgeLabel}</span>
+                                        ${recommendBadge}
+                                        ${premiumBadge}
+                                        ${trendBadge}
+                                    </div>
+                                    ${heartBadge}
+                                </div>
+                                <h3 class="text-xs font-bold text-gray-800 line-clamp-2 leading-snug h-[34px]">${stamp.title}</h3>
+                                ${dateHtml}
+                            </div>
+                            <div class="flex items-center justify-between text-[10px] text-gray-400 font-bold border-t border-gray-50 pt-2">
+                                <span class="text-[#00C300]">LINEストア</span>
+                                <i class="fa-solid fa-chevron-right text-[8px] text-[#00C300]"></i>
+                            </div>
+                        </div>
+                    </a>
+                `;
+                grid.insertAdjacentHTML('beforeend', card);
+            });
+        }
+
+        // 📖 特集カードをタップして絞り込み切り替え
+        function toggleFeature(featureKey) {
+            if (activeFeature === featureKey) {
+                clearFeature();
+                return;
+            }
+
+            activeFeature = featureKey;
+            updateFeatureUI();
+            render();
+        }
+
+        function clearFeature() {
+            activeFeature = null;
+            updateFeatureUI();
+            render();
+        }
+
+        function updateFeatureUI() {
+            const statusText = document.getElementById('feature-status-text');
+            const resetBar = document.getElementById('feature-reset-bar');
+            const resetLabel = document.getElementById('feature-reset-label');
+
+            ['recommended', 'premium', 'okinawa'].forEach(key => {
+                const btn = document.getElementById(`feature-btn-${key}`);
+                if (btn) {
+                    if (activeFeature === key) {
+                        btn.classList.add('ring-4', 'ring-[#00C300]', 'scale-[1.02]');
+                    } else {
+                        btn.classList.remove('ring-4', 'ring-[#00C300]', 'scale-[1.02]');
+                    }
+                }
+            });
+
+            if (activeFeature) {
+                statusText.classList.remove('hidden');
+                resetBar.classList.remove('hidden');
+
+                let title = '特集';
+                if (activeFeature === 'recommended') title = '✨ 今月の推し特集';
+                if (activeFeature === 'premium') title = '👑 プレミアム解禁特集';
+                if (activeFeature === 'okinawa') title = '🌺 沖縄方言ワールド';
+
+                resetLabel.innerHTML = `<i class="fa-solid fa-sparkles text-[#00C300]"></i> <strong>${title}</strong> を表示中`;
+            } else {
+                statusText.classList.add('hidden');
+                resetBar.classList.add('hidden');
+            }
+        }
+
+        function changeSort(type) {
+            currentSort = type;
+            localStorage.setItem('portfolio_sort', type);
+
+            const btnNewest = document.getElementById('sort-newest');
+            const btnHearts = document.getElementById('sort-hearts');
+
+            if (type === 'newest') {
+                btnNewest.className = 'text-[#00C300] font-bold transition';
+                btnHearts.className = 'text-gray-400 hover:text-[#00C300] transition';
+            } else {
+                btnHearts.className = 'text-[#00C300] font-bold transition';
+                btnNewest.className = 'text-gray-400 hover:text-[#00C300] transition';
+            }
+            if (allStamps.length > 0) render();
+        }
+
+        function updateBadgeCounts() {
+            const recommendedCount = allStamps.filter(s => s.isRecommended).length;
+            const okinawaCount = allStamps.filter(s => s.category === 'okinawa').length;
+            const keigoCount = allStamps.filter(s => s.category === 'keigo').length;
+            const othersCount = allStamps.filter(s => s.category === 'others').length;
+
+            document.getElementById('count-recommended').textContent = recommendedCount;
+            document.getElementById('count-okinawa').textContent = okinawaCount;
+            document.getElementById('count-keigo').textContent = keigoCount;
+            document.getElementById('count-others').textContent = othersCount;
+            document.getElementById('total-count').textContent = `全 ${allStamps.length}作品 を配信中！`;
+        }
+
+        function switchCategory(category) {
+            // カテゴリタブを押した際は、特集の絞り込みをリセットして通常カテゴリ表示にする
+            if (activeFeature) {
+                activeFeature = null;
+                updateFeatureUI();
+            }
+
+            currentCategory = category;
+            localStorage.setItem('portfolio_category', category);
+
+            ['recommended', 'okinawa', 'keigo', 'others'].forEach(cat => {
+                const tab = document.getElementById(`tab-${cat}`);
+                if (tab) {
+                    if (cat === category) {
+                        tab.classList.add('btn-active');
+                    } else {
+                        tab.classList.remove('btn-active');
+                    }
+                }
+            });
+
+            if (allStamps.length > 0) render();
+        }
+
+        function filterType(type) {
+            currentType = type;
+            localStorage.setItem('portfolio_type', type);
+
+            ['all', 'sticker', 'animated-sticker', 'popup-sticker', 'effect-sticker', 'emoji', 'animated-emoji'].forEach(t => {
+                const btn = document.getElementById(`sub-${t}`);
+                if (btn) {
+                    if (t === type) {
+                        btn.classList.add('btn-active');
+                    } else {
+                        btn.classList.remove('btn-active');
+                    }
+                }
+            });
+
+            if (allStamps.length > 0) render();
+        }
+
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            render();
+        });
+
+        function showError() {
+            document.getElementById('loading-placeholder').classList.add('hidden');
+            document.getElementById('error-message').classList.remove('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const savedSort = localStorage.getItem('portfolio_sort') || 'newest';
+            const savedCategory = localStorage.getItem('portfolio_category') || 'okinawa';
+            const savedType = localStorage.getItem('portfolio_type') || 'all';
+
+            changeSort(savedSort);
+            switchCategory(savedCategory);
+            filterType(savedType);
+
+            const stamps = await fetchSpreadsheetData();
+            allStamps = stamps;
+
+            document.getElementById('loading-placeholder').classList.add('hidden');
+            if (stamps && stamps.length > 0) {
+                render();
+            } else {
+                showError();
+            }
+        });
+    </script>
+</body>
+
+</html>
