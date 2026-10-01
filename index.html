@@ -97,156 +97,189 @@
         <!-- メインコンテンツ -->
         <main class="p-4 space-y-4 flex-grow">
 
-            <!-- 📖 雑誌風 巻頭特集ピックアップバナー（横スクロール） -->
-            <div class="space-y-1.5">
-                <div class="flex items-center justify-between px-1">
-                    <span class="text-[11px] font-black text-gray-500 flex items-center gap-1 tracking-wider">
-                        <i class="fa-solid fa-sparkles text-amber-500"></i> FEATURE ARTICLES
+            <!-- 🚧 COMING SOON（準備中）専用画面 -->
+            <div id="coming-soon-screen" class="hidden text-center py-16 px-4 space-y-5 bg-gradient-to-b from-white to-gray-50 rounded-2xl border border-gray-100 shadow-sm my-6">
+                <div class="relative inline-block">
+                    <img src="top-left_2.png" alt="シーサー" class="w-24 h-24 mx-auto object-contain animate-bounce"
+                         onerror="this.onerror=null; this.src='top-left.png';">
+                    <span class="absolute -top-1 -right-2 bg-amber-400 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm">
+                        UPDATE!
                     </span>
-                    <span id="feature-status-text" class="text-[10px] text-[#00C300] font-bold hidden flex items-center gap-1">
-                        <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#00C300] animate-pulse"></span>特集絞り込み中
+                </div>
+                
+                <div class="space-y-2">
+                    <span class="inline-block text-[11px] font-black text-[#00C300] bg-green-50 px-3 py-1 rounded-full border border-green-200 tracking-wider">
+                        ✨ COMING SOON... ✨
                     </span>
-                </div>
-                <div class="flex gap-2.5 overflow-x-auto pb-1 no-scrollbar snap-x">
-                    <!-- 特集カード 1: 今月の推し -->
-                    <button onclick="toggleFeature('recommended')" id="feature-btn-recommended"
-                        class="snap-start shrink-0 w-[145px] p-2.5 rounded-xl bg-gradient-to-br from-amber-500 to-orange-400 text-white shadow-sm hover:shadow transition active:scale-95 text-left flex flex-col justify-between border-2 border-transparent">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[9px] font-bold uppercase tracking-wider bg-black/20 px-1.5 py-0.5 rounded-full">Pick Up</span>
-                            <i class="fa-solid fa-star text-yellow-200 text-xs"></i>
-                        </div>
-                        <div class="mt-2">
-                            <p class="text-[10px] text-amber-100 font-bold leading-tight">作者イチオシ！</p>
-                            <h4 class="text-xs font-black leading-tight mt-0.5">今月の推し特集</h4>
-                        </div>
-                    </button>
-
-                    <!-- 特集カード 2: プレミアム解禁 -->
-                    <button onclick="toggleFeature('premium')" id="feature-btn-premium"
-                        class="snap-start shrink-0 w-[145px] p-2.5 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-500 text-white shadow-sm hover:shadow transition active:scale-95 text-left flex flex-col justify-between border-2 border-transparent">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[9px] font-bold uppercase tracking-wider bg-black/20 px-1.5 py-0.5 rounded-full">LINE Premium</span>
-                            <i class="fa-solid fa-crown text-amber-300 text-xs"></i>
-                        </div>
-                        <div class="mt-2">
-                            <p class="text-[10px] text-purple-200 font-bold leading-tight">使い放題に追加！</p>
-                            <h4 class="text-xs font-black leading-tight mt-0.5">プレミアム解禁特集</h4>
-                        </div>
-                    </button>
-
-                    <!-- 特集カード 3: 沖縄シリーズ -->
-                    <button onclick="toggleFeature('okinawa')" id="feature-btn-okinawa"
-                        class="snap-start shrink-0 w-[145px] p-2.5 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-sm hover:shadow transition active:scale-95 text-left flex flex-col justify-between border-2 border-transparent">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[9px] font-bold uppercase tracking-wider bg-black/20 px-1.5 py-0.5 rounded-full">Local Culture</span>
-                            <i class="fa-solid fa-sun text-yellow-200 text-xs"></i>
-                        </div>
-                        <div class="mt-2">
-                            <p class="text-[10px] text-emerald-100 font-bold leading-tight">島言葉＆シーサー</p>
-                            <h4 class="text-xs font-black leading-tight mt-0.5">沖縄方言ワールド</h4>
-                        </div>
-                    </button>
+                    <h2 class="text-lg font-black text-gray-800 tracking-tight">ただいま作品データを更新中！</h2>
+                    <p class="text-xs text-gray-500 leading-relaxed max-w-[260px] mx-auto">
+                        新作やオススメ特集のラインナップを準備しています。公開までもう少々お待ちください！
+                    </p>
                 </div>
 
-                <!-- 特集絞り込み中のリセットバー -->
-                <div id="feature-reset-bar" class="hidden bg-gray-100 px-3 py-1.5 rounded-lg flex items-center justify-between text-xs">
-                    <span class="text-gray-700 font-bold flex items-center gap-1" id="feature-reset-label">
-                        <i class="fa-solid fa-filter text-[#00C300]"></i> 特集を表示中
-                    </span>
-                    <button onclick="clearFeature()" class="text-gray-500 hover:text-rose-500 font-bold flex items-center gap-0.5">
-                        <i class="fa-solid fa-xmark"></i> 解除
-                    </button>
+                <div class="pt-4 border-t border-gray-100">
+                    <a href="https://store.line.me/search/ja?q=arakakiai" target="_blank" rel="noopener noreferrer"
+                       class="inline-flex items-center gap-2 bg-[#00C300] text-white text-xs font-bold px-5 py-2.5 rounded-full shadow-md hover:bg-[#00aa00] transition active:scale-95">
+                        <i class="fa-brands fa-line text-sm"></i> LINE STOREを見る
+                    </a>
                 </div>
             </div>
 
-            <!-- 検索 & フィルターコントロールパネル -->
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3.5">
-                <!-- 検索バー -->
-                <div class="relative">
-                    <i
-                        class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-                    <input type="text" id="search-input" placeholder="キーワードで作品を検索..."
-                        class="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00C300] focus:border-[#00C300] transition">
+            <!-- 通常コンテンツコンテナ（準備中は非表示になります） -->
+            <div id="normal-content" class="space-y-4">
+
+                <!-- 📖 雑誌風 巻頭特集ピックアップバナー（横スクロール） -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between px-1">
+                        <span class="text-[11px] font-black text-gray-500 flex items-center gap-1 tracking-wider">
+                            <i class="fa-solid fa-sparkles text-amber-500"></i> FEATURE ARTICLES
+                        </span>
+                        <span id="feature-status-text" class="text-[10px] text-[#00C300] font-bold hidden flex items-center gap-1">
+                            <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#00C300] animate-pulse"></span>特集絞り込み中
+                        </span>
+                    </div>
+                    <div class="flex gap-2.5 overflow-x-auto pb-1 no-scrollbar snap-x">
+                        <!-- 特集カード 1: 今月の推し -->
+                        <button onclick="toggleFeature('recommended')" id="feature-btn-recommended"
+                            class="snap-start shrink-0 w-[145px] p-2.5 rounded-xl bg-gradient-to-br from-amber-500 to-orange-400 text-white shadow-sm hover:shadow transition active:scale-95 text-left flex flex-col justify-between border-2 border-transparent">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[9px] font-bold uppercase tracking-wider bg-black/20 px-1.5 py-0.5 rounded-full">Pick Up</span>
+                                <i class="fa-solid fa-star text-yellow-200 text-xs"></i>
+                            </div>
+                            <div class="mt-2">
+                                <p class="text-[10px] text-amber-100 font-bold leading-tight">作者イチオシ！</p>
+                                <h4 class="text-xs font-black leading-tight mt-0.5">今月の推し特集</h4>
+                            </div>
+                        </button>
+
+                        <!-- 特集カード 2: プレミアム解禁 -->
+                        <button onclick="toggleFeature('premium')" id="feature-btn-premium"
+                            class="snap-start shrink-0 w-[145px] p-2.5 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-500 text-white shadow-sm hover:shadow transition active:scale-95 text-left flex flex-col justify-between border-2 border-transparent">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[9px] font-bold uppercase tracking-wider bg-black/20 px-1.5 py-0.5 rounded-full">LINE Premium</span>
+                                <i class="fa-solid fa-crown text-amber-300 text-xs"></i>
+                            </div>
+                            <div class="mt-2">
+                                <p class="text-[10px] text-purple-200 font-bold leading-tight">使い放題に追加！</p>
+                                <h4 class="text-xs font-black leading-tight mt-0.5">プレミアム解禁特集</h4>
+                            </div>
+                        </button>
+
+                        <!-- 特集カード 3: 沖縄シリーズ -->
+                        <button onclick="toggleFeature('okinawa')" id="feature-btn-okinawa"
+                            class="snap-start shrink-0 w-[145px] p-2.5 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-sm hover:shadow transition active:scale-95 text-left flex flex-col justify-between border-2 border-transparent">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[9px] font-bold uppercase tracking-wider bg-black/20 px-1.5 py-0.5 rounded-full">Local Culture</span>
+                                <i class="fa-solid fa-sun text-yellow-200 text-xs"></i>
+                            </div>
+                            <div class="mt-2">
+                                <p class="text-[10px] text-emerald-100 font-bold leading-tight">島言葉＆シーサー</p>
+                                <h4 class="text-xs font-black leading-tight mt-0.5">沖縄方言ワールド</h4>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- 特集絞り込み中のリセットバー -->
+                    <div id="feature-reset-bar" class="hidden bg-gray-100 px-3 py-1.5 rounded-lg flex items-center justify-between text-xs">
+                        <span class="text-gray-700 font-bold flex items-center gap-1" id="feature-reset-label">
+                            <i class="fa-solid fa-filter text-[#00C300]"></i> 特集を表示中
+                        </span>
+                        <button onclick="clearFeature()" class="text-gray-500 hover:text-rose-500 font-bold flex items-center gap-0.5">
+                            <i class="fa-solid fa-xmark"></i> 解除
+                        </button>
+                    </div>
                 </div>
 
-                <!-- 🌟 メインタブ：✨ 推し ⇄ 🌺 沖縄 ⇄ 🌸 敬語 ⇄ ⭐️ その他 -->
-                <div class="flex gap-1">
-                    <button onclick="switchCategory('recommended')" id="tab-recommended"
-                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
-                        ✨ 推し (<span id="count-recommended">0</span>)
-                    </button>
-                    <button onclick="switchCategory('okinawa')" id="tab-okinawa"
-                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
-                        🌺 沖縄 (<span id="count-okinawa">0</span>)
-                    </button>
-                    <button onclick="switchCategory('keigo')" id="tab-keigo"
-                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
-                        🌸 敬語 (<span id="count-keigo">0</span>)
-                    </button>
-                    <button onclick="switchCategory('others')" id="tab-others"
-                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
-                        ⭐️ 他 (<span id="count-others">0</span>)
-                    </button>
+                <!-- 検索 & フィルターコントロールパネル -->
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3.5">
+                    <!-- 検索バー -->
+                    <div class="relative">
+                        <i
+                            class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                        <input type="text" id="search-input" placeholder="キーワードで作品を検索..."
+                            class="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00C300] focus:border-[#00C300] transition">
+                    </div>
+
+                    <!-- 🌟 メインタブ：✨ 推し ⇄ 🌺 沖縄 ⇄ 🌸 敬語 ⇄ ⭐️ その他 -->
+                    <div class="flex gap-1">
+                        <button onclick="switchCategory('recommended')" id="tab-recommended"
+                            class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
+                            ✨ 推し (<span id="count-recommended">0</span>)
+                        </button>
+                        <button onclick="switchCategory('okinawa')" id="tab-okinawa"
+                            class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
+                            🌺 沖縄 (<span id="count-okinawa">0</span>)
+                        </button>
+                        <button onclick="switchCategory('keigo')" id="tab-keigo"
+                            class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
+                            🌸 敬語 (<span id="count-keigo">0</span>)
+                        </button>
+                        <button onclick="switchCategory('others')" id="tab-others"
+                            class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
+                            ⭐️ 他 (<span id="count-others">0</span>)
+                        </button>
+                    </div>
+
+                    <!-- 📅 最新順 ⇄ ❤ 人気順 切り替えスイッチパネル -->
+                    <div
+                        class="flex items-center justify-end gap-3 text-xs border-t border-gray-100 pt-2 text-gray-400 font-bold">
+                        <span><i class="fa-solid fa-arrows-up-down text-[10px]"></i> 並び替え:</span>
+                        <button onclick="changeSort('newest')" id="sort-newest" class="text-[#00C300] transition">📅
+                            最新順</button>
+                        <span class="text-gray-200">|</span>
+                        <button onclick="changeSort('hearts')" id="sort-hearts" class="hover:text-[#00C300] transition">❤️
+                            人気順</button>
+                    </div>
+
+                    <!-- サブフィルター：すべて ⇄ 各種カテゴリ -->
+                    <div class="flex flex-wrap justify-start gap-1.5 border-t border-gray-100 pt-3">
+                        <button onclick="filterType('all')" id="sub-all"
+                            class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">すべて</button>
+                        <button onclick="filterType('sticker')" id="sub-sticker"
+                            class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">スタンプ</button>
+                        <button onclick="filterType('animated-sticker')" id="sub-animated-sticker"
+                            class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">動くスタンプ</button>
+                        <button onclick="filterType('popup-sticker')" id="sub-popup-sticker"
+                            class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">大きく動くスタンプ</button>
+                        <button onclick="filterType('effect-sticker')" id="sub-effect-sticker"
+                            class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">背景が大きく動くスタンプ</button>
+                        <button onclick="filterType('emoji')" id="sub-emoji"
+                            class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">絵文字</button>
+                        <button onclick="filterType('animated-emoji')" id="sub-animated-emoji"
+                            class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">動く絵文字</button>
+                    </div>
                 </div>
 
-                <!-- 📅 最新順 ⇄ ❤️️ 人気順 切り替えスイッチパネル -->
-                <div
-                    class="flex items-center justify-end gap-3 text-xs border-t border-gray-100 pt-2 text-gray-400 font-bold">
-                    <span><i class="fa-solid fa-arrows-up-down text-[10px]"></i> 並び替え:</span>
-                    <button onclick="changeSort('newest')" id="sort-newest" class="text-[#00C300] transition">📅
-                        最新順</button>
-                    <span class="text-gray-200">|</span>
-                    <button onclick="changeSort('hearts')" id="sort-hearts" class="hover:text-[#00C300] transition">❤️
-                        人気順</button>
+                <!-- スケルトンローディング表示 -->
+                <div id="loading-placeholder" class="grid grid-cols-2 gap-3">
+                    <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex flex-col space-y-2">
+                        <div class="img-aspect-square bg-gray-100 rounded-lg animate-pulse"></div>
+                        <div class="h-3 bg-gray-100 rounded w-1/3 animate-pulse"></div>
+                        <div class="h-4 bg-gray-100 rounded w-5/6 animate-pulse"></div>
+                    </div>
                 </div>
 
-                <!-- サブフィルター：すべて ⇄ 各種カテゴリ -->
-                <div class="flex flex-wrap justify-start gap-1.5 border-t border-gray-100 pt-3">
-                    <button onclick="filterType('all')" id="sub-all"
-                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">すべて</button>
-                    <button onclick="filterType('sticker')" id="sub-sticker"
-                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">スタンプ</button>
-                    <button onclick="filterType('animated-sticker')" id="sub-animated-sticker"
-                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">動くスタンプ</button>
-                    <button onclick="filterType('popup-sticker')" id="sub-popup-sticker"
-                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">大きく動くスタンプ</button>
-                    <button onclick="filterType('effect-sticker')" id="sub-effect-sticker"
-                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">背景が大きく動くスタンプ</button>
-                    <button onclick="filterType('emoji')" id="sub-emoji"
-                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">絵文字</button>
-                    <button onclick="filterType('animated-emoji')" id="sub-animated-emoji"
-                        class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">動く絵文字</button>
+                <!-- エラー表示 -->
+                <div id="error-message"
+                    class="hidden text-center py-12 px-4 space-y-3 bg-white rounded-xl border border-gray-200 shadow-sm">
+                    <i class="fa-solid fa-circle-exclamation text-rose-500 text-3xl"></i>
+                    <h3 class="font-bold text-gray-800">データの読み込みに失敗しました</h3>
+                    <p class="text-xs text-gray-500 leading-relaxed max-w-[280px] mx-auto">
+                        スプレッドシートの閲覧設定が「リンクを知っている全員」になっているか、IDが正しいかご確認ください。</p>
                 </div>
-            </div>
 
-            <!-- スケルトンローディング表示 -->
-            <div id="loading-placeholder" class="grid grid-cols-2 gap-3">
-                <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm flex flex-col space-y-2">
-                    <div class="img-aspect-square bg-gray-100 rounded-lg animate-pulse"></div>
-                    <div class="h-3 bg-gray-100 rounded w-1/3 animate-pulse"></div>
-                    <div class="h-4 bg-gray-100 rounded w-5/6 animate-pulse"></div>
+                <!-- 空状態表示 -->
+                <div id="empty-state"
+                    class="hidden text-center py-16 bg-white rounded-xl border border-gray-200 shadow-sm space-y-2">
+                    <i class="fa-regular fa-face-frown text-3xl text-gray-300"></i>
+                    <p class="text-sm font-bold text-gray-400">該当する作品が見つかりませんでした</p>
                 </div>
-            </div>
 
-            <!-- エラー表示 -->
-            <div id="error-message"
-                class="hidden text-center py-12 px-4 space-y-3 bg-white rounded-xl border border-gray-200 shadow-sm">
-                <i class="fa-solid fa-circle-exclamation text-rose-500 text-3xl"></i>
-                <h3 class="font-bold text-gray-800">データの読み込みに失敗しました</h3>
-                <p class="text-xs text-gray-500 leading-relaxed max-w-[280px] mx-auto">
-                    スプレッドシートの閲覧設定が「リンクを知っている全員」になっているか、IDが正しいかご確認ください。</p>
-            </div>
+                <!-- 作品グリッド -->
+                <div id="stamp-grid" class="grid grid-cols-2 gap-3 hidden">
+                    <!-- JavaScriptにより動的生成されます -->
+                </div>
 
-            <!-- 空状態表示 -->
-            <div id="empty-state"
-                class="hidden text-center py-16 bg-white rounded-xl border border-gray-200 shadow-sm space-y-2">
-                <i class="fa-regular fa-face-frown text-3xl text-gray-300"></i>
-                <p class="text-sm font-bold text-gray-400">該当する作品が見つかりませんでした</p>
-            </div>
-
-            <!-- 作品グリッド -->
-            <div id="stamp-grid" class="grid grid-cols-2 gap-3 hidden">
-                <!-- JavaScriptにより動的生成されます -->
             </div>
 
         </main>
@@ -266,6 +299,9 @@
 
     <script>
         // ==================== CONFIGURATION ====================
+        // 🚧 スプレッドシート編集中はここを「true」に、終わったら「false」にするだけ！
+        const IS_COMING_SOON = true; 
+
         const SPREADSHEET_ID = '1sZ-NHSGmmXdvwDbDnsZtWSNdGt-4W3gGxhCs6ZOdp5s';
         const GID_MASTER = '0';
         const GID_HEART = '414139365';
@@ -288,7 +324,7 @@
         let currentType = 'all';
         let currentSort = 'newest';
         let searchQuery = '';
-        let activeFeature = null; // 📖 現在適用されている特集フィルター ('recommended', 'premium', 'okinawa')
+        let activeFeature = null;
 
         async function fetchTabCSV(gid) {
             const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/export?format=csv&gid=${gid}`;
@@ -360,10 +396,8 @@
                         } else if (k.includes('ステータス') || k.includes('状態') || k.includes('status')) {
                             obj.status = val;
                         } else if (k.includes('推し') || k.includes('おすすめ') || k.includes('オススメ') || k.includes('ピックアップ')) {
-                            // 🌟 G列「推し月」の入力を取得
                             obj.pickMonth = val.replace('/', '.').replace('-', '.');
                         } else if (k.includes('プレミアム') || k.includes('premium')) {
-                            // 👑 H列「プレミアム月」の入力を取得
                             obj.premiumMonth = val.replace('/', '.').replace('-', '.');
                         } else if (k.includes('カテゴリ') || k.includes('type') || k.includes('種類')) {
                             if (val.includes('エフェクトスタンプ')) {
@@ -388,7 +422,6 @@
 
                     obj.hearts = heartMap[obj.id] || 0;
 
-                    // ✨ 推し判定 & 👑 プレミアム判定
                     obj.isRecommended = Boolean(obj.pickMonth && obj.pickMonth.trim() !== '');
                     obj.isPremium = Boolean(obj.premiumMonth && obj.premiumMonth.trim() !== '');
 
@@ -458,7 +491,6 @@
             grid.innerHTML = '';
 
             let filtered = allStamps.filter(stamp => {
-                // 📖 特集モードが発動している場合の絞り込み
                 if (activeFeature === 'recommended') {
                     if (!stamp.isRecommended) return false;
                 } else if (activeFeature === 'premium') {
@@ -466,7 +498,6 @@
                 } else if (activeFeature === 'okinawa') {
                     if (stamp.category !== 'okinawa') return false;
                 } else {
-                    // 通常モード：カテゴリタブの選択に準拠
                     if (currentCategory === 'recommended') {
                         if (!stamp.isRecommended) return false;
                     } else {
@@ -479,7 +510,6 @@
                 return matchType && matchSearch;
             });
 
-            // 🔄 並び替えロジック
             if (currentSort === 'newest') {
                 filtered.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
             } else if (currentSort === 'hearts') {
@@ -591,7 +621,6 @@
             });
         }
 
-        // 📖 特集カードをタップして絞り込み切り替え
         function toggleFeature(featureKey) {
             if (activeFeature === featureKey) {
                 clearFeature();
@@ -672,7 +701,6 @@
         }
 
         function switchCategory(category) {
-            // カテゴリタブを押した際は、特集の絞り込みをリセットして通常カテゴリ表示にする
             if (activeFeature) {
                 activeFeature = null;
                 updateFeatureUI();
@@ -724,6 +752,14 @@
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
+            // 🚧 COMING SOON モードの判定
+            if (IS_COMING_SOON) {
+                document.getElementById('normal-content').classList.add('hidden');
+                document.getElementById('coming-soon-screen').classList.remove('hidden');
+                document.getElementById('total-count').textContent = 'メンテナンス中 (COMING SOON)';
+                return; // スプレッドシートの取得処理を行わずに終了
+            }
+
             const savedSort = localStorage.getItem('portfolio_sort') || 'newest';
             const savedCategory = localStorage.getItem('portfolio_category') || 'okinawa';
             const savedType = localStorage.getItem('portfolio_type') || 'all';
