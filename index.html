@@ -167,8 +167,8 @@
 
             <!-- 検索 & フィルターコントロールパネル -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3.5">
-                <!-- 検索バー -->
-                <div class="relative">
+                <!-- 検索バー（特集表示中は非表示になります） -->
+                <div id="search-input-container" class="relative">
                     <i
                         class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
                     <input type="text" id="search-input" placeholder="キーワードで作品を検索..."
@@ -296,8 +296,8 @@
 
     <script>
         // ==================== CONFIGURATION ====================
-        // 🚧 特集を準備中（COMING SOON）画面にするときは「true」、公開時は「false」
-        const FEATURE_COMING_SOON = true;
+        // 🟢 特集を公開状態に設定
+        const FEATURE_COMING_SOON = false;
 
         const SPREADSHEET_ID = '1sZ-NHSGmmXdvwDbDnsZtWSNdGt-4W3gGxhCs6ZOdp5s';
         const GID_MASTER = '0';
@@ -419,6 +419,7 @@
 
                     obj.hearts = heartMap[obj.id] || 0;
 
+                    // 推し・プレミアムの有効判定（空欄以外）
                     obj.isRecommended = Boolean(obj.pickMonth && obj.pickMonth.trim() !== '');
                     obj.isPremium = Boolean(obj.premiumMonth && obj.premiumMonth.trim() !== '');
 
@@ -496,8 +497,10 @@
                 return;
             }
 
-            // G列に推し月が入っている作品の中から、最新のものを取得（なければ全体の最新作）
+            // G列に推し月が入っている作品の中から、推し月または販売日が最新のものを取得
             const recommendedStamps = allStamps.filter(s => s.isRecommended);
+            recommendedStamps.sort((a, b) => (b.pickMonth || '').localeCompare(a.pickMonth || '') || new Date(b.date || 0) - new Date(a.date || 0));
+
             const targetStamp = recommendedStamps.length > 0 ? recommendedStamps[0] : allStamps[0];
 
             if (targetStamp) {
@@ -514,7 +517,6 @@
             const featureComingSoon = document.getElementById('feature-coming-soon');
             grid.innerHTML = '';
 
-            // 🚧 特集選択時かつ FEATURE_COMING_SOON が有効な場合は、準備中画面を表示
             const isFeatureActive = activeFeature !== null || currentCategory === 'recommended';
             if (isFeatureActive && FEATURE_COMING_SOON) {
                 grid.classList.add('hidden');
@@ -540,7 +542,9 @@
                 }
 
                 const matchType = currentType === 'all' || stamp.type === currentType;
-                const matchSearch = searchQuery === '' || stamp.title.toLowerCase().includes(searchQuery.toLowerCase());
+                // 特集絞り込み中は検索バーを隠すため、searchQueryは空文字扱い
+                const query = activeFeature ? '' : searchQuery;
+                const matchSearch = query === '' || stamp.title.toLowerCase().includes(query.toLowerCase());
                 return matchType && matchSearch;
             });
 
@@ -676,6 +680,7 @@
             const statusText = document.getElementById('feature-status-text');
             const resetBar = document.getElementById('feature-reset-bar');
             const resetLabel = document.getElementById('feature-reset-label');
+            const searchContainer = document.getElementById('search-input-container');
 
             ['recommended', 'premium'].forEach(key => {
                 const btn = document.getElementById(`feature-btn-${key}`);
@@ -691,6 +696,8 @@
             if (activeFeature) {
                 statusText.classList.remove('hidden');
                 resetBar.classList.remove('hidden');
+                // 🔍 特集絞り込み中は検索バーを非表示にする
+                if (searchContainer) searchContainer.classList.add('hidden');
 
                 let title = '特集';
                 if (activeFeature === 'recommended') title = '✨ 今月の推し特集';
@@ -700,6 +707,8 @@
             } else {
                 statusText.classList.add('hidden');
                 resetBar.classList.add('hidden');
+                // 🔍 通常画面では検索バーを表示する
+                if (searchContainer) searchContainer.classList.remove('hidden');
             }
         }
 
