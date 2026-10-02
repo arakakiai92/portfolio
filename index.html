@@ -89,7 +89,7 @@
         <main class="p-4 space-y-4 flex-grow">
 
             <!-- 📖 雑誌風 特集セクション -->
-            <div class="space-y-2.5">
+            <div class="space-y-2">
                 <div class="flex items-center justify-between px-1">
                     <span class="text-[11px] font-black text-gray-500 flex items-center gap-1 tracking-wider">
                         <i class="fa-solid fa-sparkles text-amber-500"></i> FEATURE ARTICLES
@@ -97,32 +97,6 @@
                     <span id="feature-status-text" class="text-[10px] text-[#00C300] font-bold hidden flex items-center gap-1">
                         <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#00C300] animate-pulse"></span>特集絞り込み中
                     </span>
-                </div>
-
-                <!-- 🌟 1カット掲載：今月のイチオシ ピックアップカード -->
-                <div id="hero-pickup-card" class="bg-gradient-to-b from-amber-50/70 to-white rounded-2xl border border-amber-200/60 p-3.5 shadow-sm text-center relative">
-                    <div class="flex items-center justify-center gap-1 mb-2">
-                        <span class="inline-flex items-center gap-1 text-[10px] font-black text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-full">
-                            <i class="fa-solid fa-crown text-amber-500 text-[9px]"></i> 今月のイチオシ
-                        </span>
-                    </div>
-
-                    <!-- 1カット画像 -->
-                    <div class="w-24 h-24 mx-auto flex items-center justify-center p-2 bg-white rounded-xl shadow-xs border border-gray-100 mb-2">
-                        <img id="hero-pickup-img" src="top-left_2.png" alt="今月のイチオシ" class="max-w-full max-h-full object-contain"
-                             onerror="this.onerror=null; this.src='top-left.png';">
-                    </div>
-
-                    <!-- 作品タイトル -->
-                    <h3 id="hero-pickup-title" class="text-xs font-bold text-gray-800 line-clamp-1 mb-2.5 px-2">
-                        読み込み中...
-                    </h3>
-
-                    <!-- 作品リンクボタン -->
-                    <a id="hero-pickup-link" href="#" target="_blank" rel="noopener noreferrer"
-                       class="inline-flex items-center justify-center gap-1.5 bg-[#00C300] text-white text-[11px] font-black px-4 py-1.5 rounded-full shadow-sm hover:bg-[#00aa00] transition active:scale-95">
-                        <i class="fa-brands fa-line text-sm"></i> LINEストアで見る
-                    </a>
                 </div>
 
                 <!-- 特集カード（2分割絞り込みボタン） -->
@@ -135,7 +109,7 @@
                             <i class="fa-solid fa-star text-yellow-200 text-xs"></i>
                         </div>
                         <div class="mt-2">
-                            <p class="text-[10px] text-amber-100 font-bold leading-tight">一覧をチェック！</p>
+                            <p class="text-[10px] text-amber-100 font-bold leading-tight">作者イチオシ！</p>
                             <h4 class="text-xs font-black leading-tight mt-0.5">今月の推し特集</h4>
                         </div>
                     </button>
@@ -159,7 +133,7 @@
                     <span class="text-gray-800 font-bold flex items-center gap-1.5" id="feature-reset-label">
                         <i class="fa-solid fa-filter text-[#00C300]"></i> 特集を表示中
                     </span>
-                    <button onclick="clearFeature()" class="bg-white border border-gray-300 text-gray-600 hover:text-rose-600 px-2.5 py-1 rounded-full font-bold flex items-center gap-1 shadow-2xs active:scale-95 transition">
+                    <button onclick="clearFeature()" class="bg-white border border-gray-300 text-gray-600 hover:text-rose-600 px-2.5 py-1 rounded-full font-bold flex items-center gap-1 shadow-xs active:scale-95 transition">
                         <i class="fa-solid fa-xmark text-xs"></i> 通常表示に戻す
                     </button>
                 </div>
@@ -175,7 +149,7 @@
                         class="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00C300] focus:border-[#00C300] transition">
                 </div>
 
-                <!-- 🌟 メインタブ：🌺 沖縄 ⇄ 🌸 敬語 ⇄ ⭐️ その他 -->
+                <!-- 🌺 メインタブ：沖縄 ⇄ 敬語 ⇄ その他 -->
                 <div class="flex gap-1.5">
                     <button onclick="switchCategory('okinawa')" id="tab-okinawa"
                         class="flex-1 py-2 px-1 text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-1">
@@ -198,7 +172,7 @@
                     <button onclick="changeSort('newest')" id="sort-newest" class="text-[#00C300] transition">📅
                         最新順</button>
                     <span class="text-gray-200">|</span>
-                    <button onclick="changeSort('hearts')" id="sort-hearts" class="hover:text-[#00C300] transition">❤️
+                    <button onclick="changeSort('hearts')" id="sort-hearts" class="hover:text-[#00C300] transition">❤️️
                         人気順</button>
                 </div>
 
@@ -382,15 +356,15 @@
                             obj.date = val;
                         }
 
-                        // 🌟 G列（推し月）の判定：キー名判定 ＋ 7列目(idx===6)のフォールバック
-                        if (k.includes('推し') || k.includes('おすすめ') || k.includes('オススメ') || k.includes('ピック') || idx === 6) {
+                        // 🌟 G列（推し月）の判定：キー名 OR 7列目(idx===6)フォールバック
+                        if (/推し|おすすめ|オススメ|pick/i.test(k) || idx === 6) {
                             if (val && !obj.pickMonth) {
                                 obj.pickMonth = val.replace(/[\/\-]/g, '.');
                             }
                         }
 
-                        // 👑 H列（プレミアム月）の判定：キー名判定 ＋ 8列目(idx===7)のフォールバック
-                        if (k.includes('プレミアム') || k.includes('premium') || idx === 7) {
+                        // 👑 H列（プレミアム月）の判定：キー名 OR 8列目(idx===7)フォールバック
+                        if (/プレミアム|premium|ﾌﾟﾚﾐｱﾑ/i.test(k) || idx === 7) {
                             if (val && !obj.premiumMonth) {
                                 obj.premiumMonth = val.replace(/[\/\-]/g, '.');
                             }
@@ -454,40 +428,11 @@
                     return true;
                 });
 
-                console.log('【連動データ数】全作品:', mappedData.length);
-                console.log('【推し作品数】:', mappedData.filter(s => s.isRecommended).length);
-                console.log('【プレミアム作品数】:', mappedData.filter(s => s.isPremium).length);
-
                 return mappedData;
             } catch (error) {
                 console.error('Error fetching sheets:', error);
                 showError();
                 return [];
-            }
-        }
-
-        // 🌟 1カット枠（今月のイチオシ）の更新
-        function updateHeroPickup() {
-            const imgEl = document.getElementById('hero-pickup-img');
-            const titleEl = document.getElementById('hero-pickup-title');
-            const linkEl = document.getElementById('hero-pickup-link');
-
-            // G列に推し月が入っている作品の中から、推し月または販売日が最新のものを取得
-            const recommendedStamps = allStamps.filter(s => s.isRecommended);
-            recommendedStamps.sort((a, b) => (b.pickMonth || '').localeCompare(a.pickMonth || '') || new Date(b.date || 0) - new Date(a.date || 0));
-
-            const targetStamp = recommendedStamps.length > 0 ? recommendedStamps[0] : allStamps[0];
-
-            if (targetStamp) {
-                imgEl.src = targetStamp.img;
-                titleEl.textContent = targetStamp.title;
-                linkEl.href = targetStamp.url;
-                linkEl.innerHTML = '<i class="fa-brands fa-line text-sm"></i> LINEストアで見る';
-            } else {
-                imgEl.src = 'top-left_2.png';
-                titleEl.textContent = '✨ 今月のイチオシ作品を準備中... ✨';
-                linkEl.href = 'https://store.line.me/search/ja?q=arakakiai';
-                linkEl.innerHTML = '<i class="fa-brands fa-line text-sm"></i> LINE STOREを見る';
             }
         }
 
@@ -500,13 +445,10 @@
             let filtered = [];
 
             if (activeFeature === 'recommended') {
-                // 🌟 推し特集：推し作品を全件表示
                 filtered = allStamps.filter(stamp => stamp.isRecommended);
             } else if (activeFeature === 'premium') {
-                // 👑 プレミアム特集：プレミアム作品を全件表示
                 filtered = allStamps.filter(stamp => stamp.isPremium);
             } else {
-                // 通常モード：カテゴリ ＋ タイプ ＋ 検索キーワードで絞り込み
                 filtered = allStamps.filter(stamp => {
                     const matchCategory = stamp.category === currentCategory;
                     const matchType = currentType === 'all' || stamp.type === currentType;
@@ -575,17 +517,14 @@
                     badgeStyle = 'bg-cyan-50 text-cyan-600 border border-cyan-100';
                 }
 
-                // ✨ 推しバッジ
                 const recommendBadge = stamp.isRecommended
                     ? `<span class="text-[10px] text-amber-700 font-bold bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-star text-amber-500 text-[9px]"></i>${stamp.pickMonth} 推し</span>`
                     : '';
 
-                // 👑 プレミアムバッジ
                 const premiumBadge = stamp.isPremium
                     ? `<span class="text-[10px] text-purple-700 font-bold bg-purple-50 border border-purple-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-crown text-purple-500 text-[9px]"></i>${stamp.premiumMonth} プレミアム</span>`
                     : '';
 
-                // 🏷️ 急上昇・定番バッジ
                 let trendBadge = '';
                 if (isHot) {
                     trendBadge = `<span class="text-[10px] text-orange-600 font-bold bg-orange-50 border border-orange-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-fire text-orange-500 text-[9px]"></i>急上昇</span>`;
@@ -656,32 +595,39 @@
             const resetLabel = document.getElementById('feature-reset-label');
             const filterPanel = document.getElementById('filter-control-panel');
 
-            ['recommended', 'premium'].forEach(key => {
-                const btn = document.getElementById(`feature-btn-${key}`);
-                if (btn) {
-                    if (activeFeature === key) {
-                        btn.classList.add('ring-4', 'ring-[#00C300]', 'scale-[1.02]');
-                    } else {
-                        btn.classList.remove('ring-4', 'ring-[#00C300]', 'scale-[1.02]');
-                    }
+            const btnRec = document.getElementById('feature-btn-recommended');
+            const btnPrem = document.getElementById('feature-btn-premium');
+
+            if (btnRec) {
+                if (activeFeature === 'recommended') {
+                    btnRec.classList.add('ring-4', 'ring-[#00C300]', 'scale-[1.02]');
+                } else {
+                    btnRec.classList.remove('ring-4', 'ring-[#00C300]', 'scale-[1.02]');
                 }
-            });
+            }
+            if (btnPrem) {
+                if (activeFeature === 'premium') {
+                    btnPrem.classList.add('ring-4', 'ring-[#00C300]', 'scale-[1.02]');
+                } else {
+                    btnPrem.classList.remove('ring-4', 'ring-[#00C300]', 'scale-[1.02]');
+                }
+            }
 
             if (activeFeature) {
-                statusText.classList.remove('hidden');
-                resetBar.classList.remove('hidden');
-                // 🔍 特集選択時は、検索・フィルターパネル全体を非表示にする
+                if (statusText) statusText.classList.remove('hidden');
+                if (resetBar) resetBar.classList.remove('hidden');
                 if (filterPanel) filterPanel.classList.add('hidden');
 
-                let title = '特集';
+                let title = '';
                 if (activeFeature === 'recommended') title = '✨ 今月の推し特集';
                 if (activeFeature === 'premium') title = '👑 プレミアム解禁特集';
 
-                resetLabel.innerHTML = `<i class="fa-solid fa-sparkles text-[#00C300]"></i> <strong>${title}</strong> を表示中`;
+                if (resetLabel) {
+                    resetLabel.innerHTML = `<i class="fa-solid fa-sparkles text-[#00C300]"></i> <strong>${title}</strong> を表示中`;
+                }
             } else {
-                statusText.classList.add('hidden');
-                resetBar.classList.add('hidden');
-                // 🔍 通常画面に戻ったら、検索・フィルターパネルを表示する
+                if (statusText) statusText.classList.add('hidden');
+                if (resetBar) resetBar.classList.add('hidden');
                 if (filterPanel) filterPanel.classList.remove('hidden');
             }
         }
@@ -704,14 +650,15 @@
         }
 
         function updateBadgeCounts() {
-            const okinawaCount = allStamps.filter(s => s.category === 'okinawa').length;
-            const keigoCount = allStamps.filter(s => s.category === 'keigo').length;
-            const othersCount = allStamps.filter(s => s.category === 'others').length;
+            const okinawaEl = document.getElementById('count-okinawa');
+            const keigoEl = document.getElementById('count-keigo');
+            const othersEl = document.getElementById('count-others');
+            const totalEl = document.getElementById('total-count');
 
-            document.getElementById('count-okinawa').textContent = okinawaCount;
-            document.getElementById('count-keigo').textContent = keigoCount;
-            document.getElementById('count-others').textContent = othersCount;
-            document.getElementById('total-count').textContent = `全 ${allStamps.length}作品 を配信中！`;
+            if (okinawaEl) okinawaEl.textContent = allStamps.filter(s => s.category === 'okinawa').length;
+            if (keigoEl) keigoEl.textContent = allStamps.filter(s => s.category === 'keigo').length;
+            if (othersEl) othersEl.textContent = allStamps.filter(s => s.category === 'others').length;
+            if (totalEl) totalEl.textContent = `全 ${allStamps.length}作品 を配信中！`;
         }
 
         function switchCategory(category) {
@@ -779,7 +726,6 @@
 
             document.getElementById('loading-placeholder').classList.add('hidden');
             if (stamps && stamps.length > 0) {
-                updateHeroPickup();
                 render();
             } else {
                 showError();
