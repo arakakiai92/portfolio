@@ -157,7 +157,7 @@
                 </div>
 
                 <!-- 🌟 メインタブ：✨ 推し ⇄ 🌺 沖縄 ⇄ 🌸 敬語 ⇄ ⭐️ その他 -->
-                <div class="flex gap-1">
+                <div id="category-tab-bar" class="flex gap-1 transition-opacity">
                     <button onclick="switchCategory('recommended')" id="tab-recommended"
                         class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
                         ✨ 推し (<span id="count-recommended">0</span>)
@@ -299,7 +299,7 @@
         // =======================================================
 
         // 🐞 デバッグログ（公開時は false）
-        const DEBUG = false;
+        const DEBUG = /[?&]debug\b/.test(location.search);
         const dlog = (...a) => { if (DEBUG) console.log('[debug]', ...a); };
 
         // 📋 スプレッドシートの列名 → 内部フィールド（実データの列名に明確に対応）
@@ -314,15 +314,29 @@
             premiumMonth: 'プレミアム月'
         };
 
-        // 年月を YYYY-MM に統一（2026-10 / 2026/10 / 2026.10 / 2026-10-01 / 2026年10月 / 2026/10/1 に対応）
+        // 年月を YYYY-MM に統一（2026-10 / 2026/10 / 2026.10 / 2026-10-01 / 2026年10月 / 全角数字 / 10/2026 に対応）
         function normalizeYM(val) {
             if (val === null || val === undefined) return '';
-            const m = String(val).trim().match(/^(\d{4})\D+(\d{1,2})/);
-            if (!m) return '';
-            const mon = parseInt(m[2], 10);
-            if (mon < 1 || mon > 12) return '';
-            return `${m[1]}-${String(mon).padStart(2, '0')}`;
+            let t = String(val).replace(/^\uFEFF/, '').trim()
+                .replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0))
+                .replace(/[－−ー‐–—]/g, '-');
+            if (!t) return '';
+            let m = t.match(/^(\d{4})\D+(\d{1,2})/);
+            if (m) {
+                const mon = parseInt(m[2], 10);
+                return (mon >= 1 && mon <= 12) ? `${m[1]}-${String(mon).padStart(2, '0')}` : '';
+            }
+            m = t.match(/^(\d{1,2})\/(\d{4})$/); // 10/2026
+            if (m) {
+                const mon = parseInt(m[1], 10);
+                return (mon >= 1 && mon <= 12) ? `${m[2]}-${String(mon).padStart(2, '0')}` : '';
+            }
+            return '';
         }
+
+        // 年月が現在年月か（比較は常に YYYY-MM 同士）
+        const isPickNow = s => s.pickMonth !== '' && s.pickMonth === getCurrentYM();
+        const isPremiumNow = s => s.premiumMonth !== '' && s.premiumMonth === getCurrentYM();
 
         function getCurrentYM() {
             const d = new Date();
@@ -387,7 +401,7 @@
                 });
 
                 const mappedData = masterRaw.map(row => {
-                    const obj = {id: '', title: '', url: '', type: 'sticker', img: '', date: '', status: '', pickMonth: '', premiumMonth: '', rowText: '', hearts: 0, isRecommended: false, isPremium: false, isPickNow: false, isPremiumNow: false};
+                    const obj = {id: '', title: '', url: '', type: 'sticker', img: '', date: '', status: '', pickMonth: '', premiumMonth: '', rowText: '', hearts: 0, isRecommended: false, isPremium: false};
 
                     obj.rowText = Object.values(row).join(' ');
 
@@ -405,8 +419,14 @@
                     obj.date = col(COLUMN_MAP.date);
                     obj.status = col('ステータス') || col('状態') || col('Status');
                     // 年月は内部的に YYYY-MM に統一
-                    obj.pickMonth = normalizeYM(col(COLUMN_MAP.pickMonth));
-                    obj.premiumMonth = normalizeYM(col(COLUMN_MAP.premiumMonth));
+                    // 推し月・プレミアム月は、列名が完全一致しない場合のみ「推し」「プレミアム」を含む列名で補う
+                    const findCol = (name, part) => {
+                        if (clean[name] !== undefined) return clean[name];
+                        const k = Object.keys(clean).find(h => h.includes(part));
+                        return k ? clean[k] : '';
+                    };
+                    obj.pickMonth = normalizeYM(findCol(COLUMN_MAP.pickMonth, '推し'));
+                    obj.premiumMonth = normalizeYM(findCol(COLUMN_MAP.premiumMonth, 'プレミアム'));
 
                     const typeVal = col(COLUMN_MAP.type);
                     if (typeVal.includes('エフェクトスタンプ')) {
@@ -431,9 +451,6 @@
                     // バッジ用（値が入っている）と、特集用（現在年月と一致）を分ける
                     obj.isRecommended = obj.pickMonth !== '';
                     obj.isPremium = obj.premiumMonth !== '';
-                    const nowYM = getCurrentYM();
-                    obj.isPickNow = obj.pickMonth === nowYM;
-                    obj.isPremiumNow = obj.premiumMonth === nowYM;
 
                     const titleText = (obj.title || '').toLowerCase();
 
@@ -486,9 +503,10 @@
                     return true;
                 });
 
-                dlog('CSV行数:', masterRaw.length, '/ 有効作品数:', mappedData.length);
-                dlog('現在年月(推し月/プレミアム月):', getCurrentYM());
-                dlog('今月の推し対象:', mappedData.filter(s => s.isPickNow).length, '/ 今月のプレミアム対象:', mappedData.filter(s => s.isPremiumNow).length);
+                dlog('CSV行数:', masterRaw.length, '/ 有効作品数:', mappedData.length, '/ 列名:', Object.keys(masterRaw[0] || {}));
+                dlog('現在年月:', getCurrentYM(), '/ 今月の推し対象:', mappedData.filter(isPickNow).length, '/ 今月のプレミアム対象:', mappedData.filter(isPremiumNow).length);
+                dlog('推し月(生値→正規化):', masterRaw.slice(0, 400).map(r => [r['推し月'], normalizeYM(r['推し月'])]).filter(x => x[0]));
+                dlog('プレミアム月 正規化後の分布:', mappedData.reduce((o, s) => { if (s.premiumMonth) o[s.premiumMonth] = (o[s.premiumMonth] || 0) + 1; return o; }, {}));
                 return mappedData;
             } catch (error) {
                 console.error('Error fetching sheets:', error);
@@ -514,26 +532,24 @@
 
             featureComingSoon.classList.add('hidden');
 
-            let filtered = allStamps.filter(stamp => {
-                if (activeFeature === 'recommended') {
-                    if (!stamp.isPickNow) return false;
-                } else if (activeFeature === 'premium') {
-                    if (!stamp.isPremiumNow) return false;
-                } else {
+            let filtered;
+            if (activeFeature !== null) {
+                // 🌟 特集表示中：特集条件だけを適用（カテゴリ・種類・検索は一切見ない）
+                filtered = allStamps.filter(stamp =>
+                    activeFeature === 'recommended' ? isPickNow(stamp) : isPremiumNow(stamp));
+            } else {
+                // 通常時：カテゴリ + 種類 + 検索
+                filtered = allStamps.filter(stamp => {
                     if (currentCategory === 'recommended') {
-                        if (!stamp.isPickNow) return false;
-                    } else {
-                        if (stamp.category !== currentCategory) return false;
+                        if (!isPickNow(stamp)) return false;
+                    } else if (stamp.category !== currentCategory) {
+                        return false;
                     }
-                }
-
-                // 特集表示中は種類フィルターを一時的に無効化（currentTypeの値は保持され、解除後に復帰）
-                const matchType = activeFeature !== null || currentType === 'all' || stamp.type === currentType;
-                // 特集絞り込み中は検索バーを隠すため、searchQueryは空文字扱い
-                const query = activeFeature ? '' : searchQuery;
-                const matchSearch = query === '' || stamp.title.toLowerCase().includes(query.toLowerCase());
-                return matchType && matchSearch;
-            });
+                    const matchType = currentType === 'all' || stamp.type === currentType;
+                    const matchSearch = searchQuery === '' || stamp.title.toLowerCase().includes(searchQuery.toLowerCase());
+                    return matchType && matchSearch;
+                });
+            }
 
             if (currentSort === 'newest') {
                 filtered.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
@@ -669,12 +685,14 @@
             const resetBar = document.getElementById('feature-reset-bar');
             const resetLabel = document.getElementById('feature-reset-label');
             const searchContainer = document.getElementById('search-input-container');
-            const subFilterBar = document.getElementById('sub-filter-bar');
-            if (subFilterBar) {
-                // 特集中は種類フィルターを無効表示（操作不可）にする
-                subFilterBar.classList.toggle('opacity-40', activeFeature !== null);
-                subFilterBar.classList.toggle('pointer-events-none', activeFeature !== null);
-            }
+            // 特集中はカテゴリタブ・種類フィルターを無効表示（操作不可）にする。値(currentCategory/currentType)は変更しない
+            ['category-tab-bar', 'sub-filter-bar'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.toggle('opacity-40', activeFeature !== null);
+                    el.classList.toggle('pointer-events-none', activeFeature !== null);
+                }
+            });
 
             ['recommended', 'premium'].forEach(key => {
                 const btn = document.getElementById(`feature-btn-${key}`);
@@ -724,7 +742,7 @@
         }
 
         function updateBadgeCounts() {
-            const recommendedCount = allStamps.filter(s => s.isPickNow).length;
+            const recommendedCount = allStamps.filter(isPickNow).length;
             const okinawaCount = allStamps.filter(s => s.category === 'okinawa').length;
             const keigoCount = allStamps.filter(s => s.category === 'keigo').length;
             const othersCount = allStamps.filter(s => s.category === 'others').length;
