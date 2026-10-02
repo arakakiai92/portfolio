@@ -89,14 +89,45 @@
         <main class="p-4 space-y-4 flex-grow">
 
             <!-- 📖 雑誌風 特集セクション -->
-            <div class="space-y-2">
+            <div class="space-y-2.5">
                 <div class="flex items-center justify-between px-1">
                     <span class="text-[11px] font-black text-gray-500 flex items-center gap-1 tracking-wider">
                         <i class="fa-solid fa-sparkles text-amber-500"></i> FEATURE ARTICLES
                     </span>
-                    <span id="feature-status-text" class="text-[10px] text-[#00C300] font-bold hidden flex items-center gap-1">
+                    <span id="feature-status-text"
+                        class="text-[10px] text-[#00C300] font-bold hidden flex items-center gap-1">
                         <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#00C300] animate-pulse"></span>特集絞り込み中
                     </span>
+                </div>
+
+                <!-- 🌟 1カット掲載：今月のイチオシ ピックアップカード -->
+                <div id="hero-pickup-card"
+                    class="bg-gradient-to-b from-amber-50/70 to-white rounded-2xl border border-amber-200/60 p-3.5 shadow-sm text-center relative">
+                    <div class="flex items-center justify-center gap-1 mb-2">
+                        <span
+                            class="inline-flex items-center gap-1 text-[10px] font-black text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-full">
+                            <i class="fa-solid fa-crown text-amber-500 text-[9px]"></i> 今月のイチオシ
+                        </span>
+                    </div>
+
+                    <!-- 1カット画像 -->
+                    <div
+                        class="w-24 h-24 mx-auto flex items-center justify-center p-2 bg-white rounded-xl shadow-xs border border-gray-100 mb-2">
+                        <img id="hero-pickup-img" src="top-left_2.png" alt="今月のイチオシ"
+                            class="max-w-full max-h-full object-contain"
+                            onerror="this.onerror=null; this.src='top-left.png';">
+                    </div>
+
+                    <!-- 作品タイトル -->
+                    <h3 id="hero-pickup-title" class="text-xs font-bold text-gray-800 line-clamp-1 mb-2.5 px-2">
+                        読み込み中...
+                    </h3>
+
+                    <!-- 作品リンクボタン -->
+                    <a id="hero-pickup-link" href="#" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center justify-center gap-1.5 bg-[#00C300] text-white text-[11px] font-black px-4 py-1.5 rounded-full shadow-sm hover:bg-[#00aa00] transition active:scale-95">
+                        <i class="fa-brands fa-line text-sm"></i> LINEストアで見る
+                    </a>
                 </div>
 
                 <!-- 特集カード（2分割絞り込みボタン） -->
@@ -105,11 +136,13 @@
                     <button onclick="toggleFeature('recommended')" id="feature-btn-recommended"
                         class="p-2.5 rounded-xl bg-gradient-to-br from-amber-500 to-orange-400 text-white shadow-sm hover:shadow transition active:scale-95 text-left flex flex-col justify-between border-2 border-transparent">
                         <div class="flex items-center justify-between">
-                            <span class="text-[9px] font-bold uppercase tracking-wider bg-black/20 px-1.5 py-0.5 rounded-full">Pick Up</span>
+                            <span
+                                class="text-[9px] font-bold uppercase tracking-wider bg-black/20 px-1.5 py-0.5 rounded-full">Pick
+                                Up</span>
                             <i class="fa-solid fa-star text-yellow-200 text-xs"></i>
                         </div>
                         <div class="mt-2">
-                            <p class="text-[10px] text-amber-100 font-bold leading-tight">作者イチオシ！</p>
+                            <p class="text-[10px] text-amber-100 font-bold leading-tight">一覧をチェック！</p>
                             <h4 class="text-xs font-black leading-tight mt-0.5">今月の推し特集</h4>
                         </div>
                     </button>
@@ -118,7 +151,9 @@
                     <button onclick="toggleFeature('premium')" id="feature-btn-premium"
                         class="p-2.5 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-500 text-white shadow-sm hover:shadow transition active:scale-95 text-left flex flex-col justify-between border-2 border-transparent">
                         <div class="flex items-center justify-between">
-                            <span class="text-[9px] font-bold uppercase tracking-wider bg-black/20 px-1.5 py-0.5 rounded-full">LINE Premium</span>
+                            <span
+                                class="text-[9px] font-bold uppercase tracking-wider bg-black/20 px-1.5 py-0.5 rounded-full">LINE
+                                Premium</span>
                             <i class="fa-solid fa-crown text-amber-300 text-xs"></i>
                         </div>
                         <div class="mt-2">
@@ -129,38 +164,44 @@
                 </div>
 
                 <!-- 特集絞り込み中のリセットバー -->
-                <div id="feature-reset-bar" class="hidden bg-gray-100 px-3 py-2 rounded-xl flex items-center justify-between text-xs border border-gray-200">
-                    <span class="text-gray-800 font-bold flex items-center gap-1.5" id="feature-reset-label">
+                <div id="feature-reset-bar"
+                    class="hidden bg-gray-100 px-3 py-1.5 rounded-lg flex items-center justify-between text-xs">
+                    <span class="text-gray-700 font-bold flex items-center gap-1" id="feature-reset-label">
                         <i class="fa-solid fa-filter text-[#00C300]"></i> 特集を表示中
                     </span>
-                    <button onclick="clearFeature()" class="bg-white border border-gray-300 text-gray-600 hover:text-rose-600 px-2.5 py-1 rounded-full font-bold flex items-center gap-1 shadow-xs active:scale-95 transition">
-                        <i class="fa-solid fa-xmark text-xs"></i> 通常表示に戻す
+                    <button onclick="clearFeature()"
+                        class="text-gray-500 hover:text-rose-500 font-bold flex items-center gap-0.5">
+                        <i class="fa-solid fa-xmark"></i> 解除
                     </button>
                 </div>
             </div>
 
-            <!-- 🔍 検索 & フィルターコントロールパネル（特集選択時は全体が非表示になります） -->
-            <div id="filter-control-panel" class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3.5 transition-all">
-                <!-- 検索バー -->
-                <div class="relative">
+            <!-- 検索 & フィルターコントロールパネル -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3.5">
+                <!-- 検索バー（特集表示中は非表示になります） -->
+                <div id="search-input-container" class="relative">
                     <i
                         class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
                     <input type="text" id="search-input" placeholder="キーワードで作品を検索..."
                         class="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00C300] focus:border-[#00C300] transition">
                 </div>
 
-                <!-- 🌺 メインタブ：沖縄 ⇄ 敬語 ⇄ その他 -->
-                <div class="flex gap-1.5">
+                <!-- 🌟 メインタブ：✨ 推し ⇄ 🌺 沖縄 ⇄ 🌸 敬語 ⇄ ⭐️ その他 -->
+                <div class="flex gap-1">
+                    <button onclick="switchCategory('recommended')" id="tab-recommended"
+                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
+                        ✨ 推し (<span id="count-recommended">0</span>)
+                    </button>
                     <button onclick="switchCategory('okinawa')" id="tab-okinawa"
-                        class="flex-1 py-2 px-1 text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-1">
+                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
                         🌺 沖縄 (<span id="count-okinawa">0</span>)
                     </button>
                     <button onclick="switchCategory('keigo')" id="tab-keigo"
-                        class="flex-1 py-2 px-1 text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-1">
+                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
                         🌸 敬語 (<span id="count-keigo">0</span>)
                     </button>
                     <button onclick="switchCategory('others')" id="tab-others"
-                        class="flex-1 py-2 px-1 text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-1">
+                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
                         ⭐️ 他 (<span id="count-others">0</span>)
                     </button>
                 </div>
@@ -172,12 +213,12 @@
                     <button onclick="changeSort('newest')" id="sort-newest" class="text-[#00C300] transition">📅
                         最新順</button>
                     <span class="text-gray-200">|</span>
-                    <button onclick="changeSort('hearts')" id="sort-hearts" class="hover:text-[#00C300] transition">❤️️
+                    <button onclick="changeSort('hearts')" id="sort-hearts" class="hover:text-[#00C300] transition">❤️
                         人気順</button>
                 </div>
 
                 <!-- サブフィルター：すべて ⇄ 各種カテゴリ -->
-                <div class="flex flex-wrap justify-start gap-1.5 border-t border-gray-100 pt-3">
+                <div id="sub-filter-bar" class="flex flex-wrap justify-start gap-1.5 border-t border-gray-100 pt-3 transition-opacity">
                     <button onclick="filterType('all')" id="sub-all"
                         class="px-3 py-1 text-[11px] font-bold rounded-full bg-white text-gray-500 border border-gray-300 transition hover:bg-gray-50">すべて</button>
                     <button onclick="filterType('sticker')" id="sub-sticker"
@@ -204,6 +245,31 @@
                 </div>
             </div>
 
+            <!-- 🚧 特集エリア専用の準備中（COMING SOON）画面 -->
+            <div id="feature-coming-soon"
+                class="hidden text-center py-12 px-4 space-y-4 bg-gradient-to-b from-white to-gray-50 rounded-2xl border border-gray-100 shadow-sm">
+                <div class="relative inline-block">
+                    <img src="top-left_2.png" alt="シーサー" class="w-16 h-16 mx-auto object-contain animate-bounce"
+                        onerror="this.onerror=null; this.src='top-left.png';">
+                </div>
+                <div class="space-y-1.5">
+                    <span
+                        class="inline-block text-[10px] font-black text-[#00C300] bg-green-50 px-2.5 py-0.5 rounded-full border border-green-200 tracking-wider">
+                        ✨ COMING SOON... ✨
+                    </span>
+                    <h3 class="text-sm font-black text-gray-800">ただいま今月の特集を準備中！</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed max-w-[240px] mx-auto">
+                        おすすめ作品のラインナップを更新しています。公開まで少々お待ちください！
+                    </p>
+                </div>
+                <div class="pt-2">
+                    <button onclick="clearFeature(); switchCategory('okinawa');"
+                        class="text-xs text-[#00C300] hover:underline font-bold">
+                        🌺 沖縄系作品を見る →
+                    </button>
+                </div>
+            </div>
+
             <!-- エラー表示 -->
             <div id="error-message"
                 class="hidden text-center py-12 px-4 space-y-3 bg-white rounded-xl border border-gray-200 shadow-sm">
@@ -217,7 +283,7 @@
             <div id="empty-state"
                 class="hidden text-center py-16 bg-white rounded-xl border border-gray-200 shadow-sm space-y-2">
                 <i class="fa-regular fa-face-frown text-3xl text-gray-300"></i>
-                <p class="text-sm font-bold text-gray-400" id="empty-state-text">該当する作品が見つかりませんでした</p>
+                <p class="text-sm font-bold text-gray-400">該当する作品が見つかりませんでした</p>
             </div>
 
             <!-- 作品グリッド -->
@@ -242,6 +308,9 @@
 
     <script>
         // ==================== CONFIGURATION ====================
+        // 🟢 特集を公開状態に設定
+        const FEATURE_COMING_SOON = false;
+
         const SPREADSHEET_ID = '1sZ-NHSGmmXdvwDbDnsZtWSNdGt-4W3gGxhCs6ZOdp5s';
         const GID_MASTER = '0';
         const GID_HEART = '414139365';
@@ -258,6 +327,37 @@
             '47126076'
         ];
         // =======================================================
+
+        // 🐞 デバッグログ（公開時は false）
+        const DEBUG = false;
+        const dlog = (...a) => { if (DEBUG) console.log('[debug]', ...a); };
+
+        // 📋 スプレッドシートの列名 → 内部フィールド（実データの列名に明確に対応）
+        const COLUMN_MAP = {
+            id: 'Item ID',
+            title: '日本語タイトル',
+            type: 'カテゴリ',
+            url: 'ストアURL',
+            img: 'サムネイルURL',
+            date: '販売開始日',
+            pickMonth: '推し月',
+            premiumMonth: 'プレミアム月'
+        };
+
+        // 年月を YYYY-MM に統一（2026-10 / 2026/10 / 2026.10 / 2026-10-01 / 2026年10月 / 2026/10/1 に対応）
+        function normalizeYM(val) {
+            if (val === null || val === undefined) return '';
+            const m = String(val).trim().match(/^(\d{4})\D+(\d{1,2})/);
+            if (!m) return '';
+            const mon = parseInt(m[2], 10);
+            if (mon < 1 || mon > 12) return '';
+            return `${m[1]}-${String(mon).padStart(2, '0')}`;
+        }
+
+        function getCurrentYM() {
+            const d = new Date();
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        }
 
         let allStamps = [];
         let currentCategory = 'okinawa';
@@ -303,7 +403,7 @@
                     Object.keys(row).forEach(key => {
                         const k = key.trim().toLowerCase();
                         const val = row[key] ? row[key].trim() : '';
-                        if (k.includes('item id') || k.includes('id')) {
+                        if (k === 'item id' || k === 'itemid' || k === 'id') {
                             itemId = val;
                         }
                         if (k.includes('ハート') || k.includes('heart')) {
@@ -317,65 +417,53 @@
                 });
 
                 const mappedData = masterRaw.map(row => {
-                    const obj = { id: '', title: '', url: '', type: 'sticker', img: '', date: '', status: '', pickMonth: '', premiumMonth: '', rowText: '', hearts: 0, isRecommended: false, isPremium: false };
+                    const obj = {id: '', title: '', url: '', type: 'sticker', img: '', date: '', status: '', pickMonth: '', premiumMonth: '', rowText: '', hearts: 0, isRecommended: false, isPremium: false, isPickNow: false, isPremiumNow: false};
 
                     obj.rowText = Object.values(row).join(' ');
 
-                    const keys = Object.keys(row);
-                    keys.forEach((key, idx) => {
-                        const k = key.trim().toLowerCase();
-                        const val = row[key] ? String(row[key]).trim() : '';
-
-                        if (k.includes('item id') || k.includes('id')) {
-                            obj.id = val;
-                        } else if (k.includes('サムネイル') || k.includes('画像') || k.includes('img')) {
-                            obj.img = val;
-                        } else if (k.includes('タイトル') || k.includes('title') || k.includes('作品名')) {
-                            obj.title = val;
-                        } else if (k.includes('url') || k.includes('リンク') || k.includes('ストア')) {
-                            obj.url = val;
-                        } else if (k.includes('ステータス') || k.includes('状態') || k.includes('status')) {
-                            obj.status = val;
-                        } else if (k.includes('カテゴリ') || k.includes('type') || k.includes('種類')) {
-                            if (val.includes('エフェクトスタンプ')) {
-                                obj.type = 'effect-sticker';
-                            } else if (val.includes('ポップアップスタンプ')) {
-                                obj.type = 'popup-sticker';
-                            } else if (val.includes('動くスタンプ') || val.includes('アニメーションスタンプ')) {
-                                obj.type = 'animated-sticker';
-                            } else if (val.includes('動く絵文字') || val.includes('アニメーション絵文字')) {
-                                obj.type = 'animated-emoji';
-                            } else if (val.includes('絵文字')) {
-                                obj.type = 'emoji';
-                            } else if (val.includes('着せ替え') || val.includes('着せかえ') || val.includes('テーマ')) {
-                                obj.type = 'theme';
-                            } else {
-                                obj.type = 'sticker';
-                            }
-                        } else if (k.includes('開始日') || k.includes('日付') || k.includes('date')) {
-                            obj.date = val;
-                        }
-
-                        // 🌟 G列（推し月）の判定：キー名 OR 7列目(idx===6)フォールバック
-                        if (/推し|おすすめ|オススメ|pick/i.test(k) || idx === 6) {
-                            if (val && !obj.pickMonth) {
-                                obj.pickMonth = val.replace(/[\/\-]/g, '.');
-                            }
-                        }
-
-                        // 👑 H列（プレミアム月）の判定：キー名 OR 8列目(idx===7)フォールバック
-                        if (/プレミアム|premium|ﾌﾟﾚﾐｱﾑ/i.test(k) || idx === 7) {
-                            if (val && !obj.premiumMonth) {
-                                obj.premiumMonth = val.replace(/[\/\-]/g, '.');
-                            }
-                        }
+                    // BOM・前後空白を除いた列名で参照できるようにする
+                    const clean = {};
+                    Object.keys(row).forEach(key => {
+                        clean[key.replace(/^\uFEFF/, '').trim()] = (row[key] || '').trim();
                     });
+                    const col = name => clean[name] || '';
+
+                    obj.id = col(COLUMN_MAP.id);
+                    obj.title = col(COLUMN_MAP.title);
+                    obj.url = col(COLUMN_MAP.url);
+                    obj.img = col(COLUMN_MAP.img);
+                    obj.date = col(COLUMN_MAP.date);
+                    obj.status = col('ステータス') || col('状態') || col('Status');
+                    // 年月は内部的に YYYY-MM に統一
+                    obj.pickMonth = normalizeYM(col(COLUMN_MAP.pickMonth));
+                    obj.premiumMonth = normalizeYM(col(COLUMN_MAP.premiumMonth));
+
+                    const typeVal = col(COLUMN_MAP.type);
+                    if (typeVal.includes('エフェクトスタンプ')) {
+                        obj.type = 'effect-sticker';
+                    } else if (typeVal.includes('ポップアップスタンプ')) {
+                        obj.type = 'popup-sticker';
+                    } else if (typeVal.includes('動くスタンプ') || typeVal.includes('アニメーションスタンプ')) {
+                        obj.type = 'animated-sticker';
+                    } else if (typeVal.includes('動く絵文字') || typeVal.includes('アニメーション絵文字')) {
+                        obj.type = 'animated-emoji';
+                    } else if (typeVal.includes('絵文字')) {
+                        obj.type = 'emoji';
+                    } else if (typeVal.includes('着せ替え') || typeVal.includes('着せかえ') || typeVal.includes('テーマ')) {
+                        obj.type = 'theme';
+                    } else {
+                        obj.type = 'sticker';
+                    }
 
                     obj.hearts = heartMap[obj.id] || 0;
 
                     // 推し・プレミアムの有効判定（空欄以外）
-                    obj.isRecommended = Boolean(obj.pickMonth && obj.pickMonth.trim() !== '');
-                    obj.isPremium = Boolean(obj.premiumMonth && obj.premiumMonth.trim() !== '');
+                    // バッジ用（値が入っている）と、特集用（現在年月と一致）を分ける
+                    obj.isRecommended = obj.pickMonth !== '';
+                    obj.isPremium = obj.premiumMonth !== '';
+                    const nowYM = getCurrentYM();
+                    obj.isPickNow = obj.pickMonth === nowYM;
+                    obj.isPremiumNow = obj.premiumMonth === nowYM;
 
                     const titleText = (obj.title || '').toLowerCase();
 
@@ -428,6 +516,9 @@
                     return true;
                 });
 
+                dlog('CSV行数:', masterRaw.length, '/ 有効作品数:', mappedData.length);
+                dlog('現在年月(推し月/プレミアム月):', getCurrentYM());
+                dlog('今月の推し対象:', mappedData.filter(s => s.isPickNow).length, '/ 今月のプレミアム対象:', mappedData.filter(s => s.isPremiumNow).length);
                 return mappedData;
             } catch (error) {
                 console.error('Error fetching sheets:', error);
@@ -436,26 +527,75 @@
             }
         }
 
+        // 🌟 1カット枠（今月のイチオシ）の更新
+        function updateHeroPickup() {
+            const imgEl = document.getElementById('hero-pickup-img');
+            const titleEl = document.getElementById('hero-pickup-title');
+            const linkEl = document.getElementById('hero-pickup-link');
+
+            if (FEATURE_COMING_SOON) {
+                imgEl.src = 'top-left_2.png';
+                titleEl.textContent = '✨ 今月のイチオシ作品を準備中... ✨';
+                linkEl.href = 'https://store.line.me/search/ja?q=arakakiai';
+                linkEl.innerHTML = '<i class="fa-brands fa-line text-sm"></i> LINE STOREを見る';
+                return;
+            }
+
+            // 推し月 === 現在年月 の作品だけを候補にする（販売開始日の新しい順）
+            const candidates = allStamps.filter(s => s.isPickNow);
+            candidates.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            const targetStamp = candidates[0];
+
+            if (targetStamp) {
+                imgEl.src = targetStamp.img;
+                titleEl.textContent = targetStamp.title;
+                linkEl.href = targetStamp.url;
+                linkEl.innerHTML = '<i class="fa-brands fa-line text-sm"></i> LINEストアで見る';
+            } else {
+                imgEl.src = 'top-left_2.png';
+                titleEl.textContent = '✨ 今月のイチオシ作品を準備中... ✨';
+                linkEl.href = 'https://store.line.me/search/ja?q=arakakiai';
+                linkEl.innerHTML = '<i class="fa-brands fa-line text-sm"></i> LINE STOREを見る';
+            }
+        }
+
         function render() {
             const grid = document.getElementById('stamp-grid');
             const emptyState = document.getElementById('empty-state');
-            const emptyStateText = document.getElementById('empty-state-text');
+            const featureComingSoon = document.getElementById('feature-coming-soon');
             grid.innerHTML = '';
 
-            let filtered = [];
-
-            if (activeFeature === 'recommended') {
-                filtered = allStamps.filter(stamp => stamp.isRecommended);
-            } else if (activeFeature === 'premium') {
-                filtered = allStamps.filter(stamp => stamp.isPremium);
-            } else {
-                filtered = allStamps.filter(stamp => {
-                    const matchCategory = stamp.category === currentCategory;
-                    const matchType = currentType === 'all' || stamp.type === currentType;
-                    const matchSearch = searchQuery === '' || stamp.title.toLowerCase().includes(searchQuery.toLowerCase());
-                    return matchCategory && matchType && matchSearch;
-                });
+            const isFeatureActive = activeFeature !== null || currentCategory === 'recommended';
+            if (isFeatureActive && FEATURE_COMING_SOON) {
+                grid.classList.add('hidden');
+                emptyState.classList.add('hidden');
+                featureComingSoon.classList.remove('hidden');
+                updateBadgeCounts();
+                return;
             }
+
+            featureComingSoon.classList.add('hidden');
+
+            let filtered = allStamps.filter(stamp => {
+                if (activeFeature === 'recommended') {
+                    if (!stamp.isPickNow) return false;
+                } else if (activeFeature === 'premium') {
+                    if (!stamp.isPremiumNow) return false;
+                } else {
+                    if (currentCategory === 'recommended') {
+                        if (!stamp.isPickNow) return false;
+                    } else {
+                        if (stamp.category !== currentCategory) return false;
+                    }
+                }
+
+                // 特集表示中は種類フィルターを一時的に無効化（currentTypeの値は保持され、解除後に復帰）
+                const matchType = activeFeature !== null || currentType === 'all' || stamp.type === currentType;
+                // 特集絞り込み中は検索バーを隠すため、searchQueryは空文字扱い
+                const query = activeFeature ? '' : searchQuery;
+                const matchSearch = query === '' || stamp.title.toLowerCase().includes(query.toLowerCase());
+                return matchType && matchSearch;
+            });
 
             if (currentSort === 'newest') {
                 filtered.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
@@ -469,17 +609,11 @@
             }
 
             updateBadgeCounts();
+            dlog('activeFeature:', activeFeature, '/ 絞り込み後件数:', filtered.length);
 
             if (filtered.length === 0) {
                 grid.classList.add('hidden');
                 emptyState.classList.remove('hidden');
-                if (activeFeature === 'recommended') {
-                    emptyStateText.textContent = '今月の推し作品はただいま準備中です';
-                } else if (activeFeature === 'premium') {
-                    emptyStateText.textContent = 'プレミアム解禁作品はただいま準備中です';
-                } else {
-                    emptyStateText.textContent = '該当する作品が見つかりませんでした';
-                }
                 return;
             }
 
@@ -517,14 +651,17 @@
                     badgeStyle = 'bg-cyan-50 text-cyan-600 border border-cyan-100';
                 }
 
+                // ✨ 推しバッジ
                 const recommendBadge = stamp.isRecommended
-                    ? `<span class="text-[10px] text-amber-700 font-bold bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-star text-amber-500 text-[9px]"></i>${stamp.pickMonth} 推し</span>`
+                    ? `<span class="text-[10px] text-amber-700 font-bold bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-star text-amber-500 text-[9px]"></i>${stamp.pickMonth.replace('-', '.')} 推し</span>`
                     : '';
 
+                // 👑 プレミアムバッジ
                 const premiumBadge = stamp.isPremium
-                    ? `<span class="text-[10px] text-purple-700 font-bold bg-purple-50 border border-purple-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-crown text-purple-500 text-[9px]"></i>${stamp.premiumMonth} プレミアム</span>`
+                    ? `<span class="text-[10px] text-purple-700 font-bold bg-purple-50 border border-purple-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-crown text-purple-500 text-[9px]"></i>${stamp.premiumMonth.replace('-', '.')} プレミアム</span>`
                     : '';
 
+                // 🏷️ 急上昇・定番バッジ
                 let trendBadge = '';
                 if (isHot) {
                     trendBadge = `<span class="text-[10px] text-orange-600 font-bold bg-orange-50 border border-orange-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-fire text-orange-500 text-[9px]"></i>急上昇</span>`;
@@ -593,42 +730,41 @@
             const statusText = document.getElementById('feature-status-text');
             const resetBar = document.getElementById('feature-reset-bar');
             const resetLabel = document.getElementById('feature-reset-label');
-            const filterPanel = document.getElementById('filter-control-panel');
-
-            const btnRec = document.getElementById('feature-btn-recommended');
-            const btnPrem = document.getElementById('feature-btn-premium');
-
-            if (btnRec) {
-                if (activeFeature === 'recommended') {
-                    btnRec.classList.add('ring-4', 'ring-[#00C300]', 'scale-[1.02]');
-                } else {
-                    btnRec.classList.remove('ring-4', 'ring-[#00C300]', 'scale-[1.02]');
-                }
+            const searchContainer = document.getElementById('search-input-container');
+            const subFilterBar = document.getElementById('sub-filter-bar');
+            if (subFilterBar) {
+                // 特集中は種類フィルターを無効表示（操作不可）にする
+                subFilterBar.classList.toggle('opacity-40', activeFeature !== null);
+                subFilterBar.classList.toggle('pointer-events-none', activeFeature !== null);
             }
-            if (btnPrem) {
-                if (activeFeature === 'premium') {
-                    btnPrem.classList.add('ring-4', 'ring-[#00C300]', 'scale-[1.02]');
-                } else {
-                    btnPrem.classList.remove('ring-4', 'ring-[#00C300]', 'scale-[1.02]');
+
+            ['recommended', 'premium'].forEach(key => {
+                const btn = document.getElementById(`feature-btn-${key}`);
+                if (btn) {
+                    if (activeFeature === key) {
+                        btn.classList.add('ring-4', 'ring-[#00C300]', 'scale-[1.02]');
+                    } else {
+                        btn.classList.remove('ring-4', 'ring-[#00C300]', 'scale-[1.02]');
+                    }
                 }
-            }
+            });
 
             if (activeFeature) {
-                if (statusText) statusText.classList.remove('hidden');
-                if (resetBar) resetBar.classList.remove('hidden');
-                if (filterPanel) filterPanel.classList.add('hidden');
+                statusText.classList.remove('hidden');
+                resetBar.classList.remove('hidden');
+                // 🔍 特集絞り込み中は検索バーを非表示にする
+                if (searchContainer) searchContainer.classList.add('hidden');
 
-                let title = '';
+                let title = '特集';
                 if (activeFeature === 'recommended') title = '✨ 今月の推し特集';
                 if (activeFeature === 'premium') title = '👑 プレミアム解禁特集';
 
-                if (resetLabel) {
-                    resetLabel.innerHTML = `<i class="fa-solid fa-sparkles text-[#00C300]"></i> <strong>${title}</strong> を表示中`;
-                }
+                resetLabel.innerHTML = `<i class="fa-solid fa-sparkles text-[#00C300]"></i> <strong>${title}</strong> を表示中`;
             } else {
-                if (statusText) statusText.classList.add('hidden');
-                if (resetBar) resetBar.classList.add('hidden');
-                if (filterPanel) filterPanel.classList.remove('hidden');
+                statusText.classList.add('hidden');
+                resetBar.classList.add('hidden');
+                // 🔍 通常画面では検索バーを表示する
+                if (searchContainer) searchContainer.classList.remove('hidden');
             }
         }
 
@@ -650,15 +786,16 @@
         }
 
         function updateBadgeCounts() {
-            const okinawaEl = document.getElementById('count-okinawa');
-            const keigoEl = document.getElementById('count-keigo');
-            const othersEl = document.getElementById('count-others');
-            const totalEl = document.getElementById('total-count');
+            const recommendedCount = allStamps.filter(s => s.isPickNow).length;
+            const okinawaCount = allStamps.filter(s => s.category === 'okinawa').length;
+            const keigoCount = allStamps.filter(s => s.category === 'keigo').length;
+            const othersCount = allStamps.filter(s => s.category === 'others').length;
 
-            if (okinawaEl) okinawaEl.textContent = allStamps.filter(s => s.category === 'okinawa').length;
-            if (keigoEl) keigoEl.textContent = allStamps.filter(s => s.category === 'keigo').length;
-            if (othersEl) othersEl.textContent = allStamps.filter(s => s.category === 'others').length;
-            if (totalEl) totalEl.textContent = `全 ${allStamps.length}作品 を配信中！`;
+            document.getElementById('count-recommended').textContent = recommendedCount;
+            document.getElementById('count-okinawa').textContent = okinawaCount;
+            document.getElementById('count-keigo').textContent = keigoCount;
+            document.getElementById('count-others').textContent = othersCount;
+            document.getElementById('total-count').textContent = `全 ${allStamps.length}作品 を配信中！`;
         }
 
         function switchCategory(category) {
@@ -670,7 +807,7 @@
             currentCategory = category;
             localStorage.setItem('portfolio_category', category);
 
-            ['okinawa', 'keigo', 'others'].forEach(cat => {
+            ['recommended', 'okinawa', 'keigo', 'others'].forEach(cat => {
                 const tab = document.getElementById(`tab-${cat}`);
                 if (tab) {
                     if (cat === category) {
@@ -726,6 +863,7 @@
 
             document.getElementById('loading-placeholder').classList.add('hidden');
             if (stamps && stamps.length > 0) {
+                updateHeroPickup();
                 render();
             } else {
                 showError();
