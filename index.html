@@ -155,42 +155,38 @@
                 </div>
 
                 <!-- 特集絞り込み中のリセットバー -->
-                <div id="feature-reset-bar" class="hidden bg-gray-100 px-3 py-1.5 rounded-lg flex items-center justify-between text-xs">
-                    <span class="text-gray-700 font-bold flex items-center gap-1" id="feature-reset-label">
+                <div id="feature-reset-bar" class="hidden bg-gray-100 px-3 py-2 rounded-xl flex items-center justify-between text-xs border border-gray-200">
+                    <span class="text-gray-800 font-bold flex items-center gap-1.5" id="feature-reset-label">
                         <i class="fa-solid fa-filter text-[#00C300]"></i> 特集を表示中
                     </span>
-                    <button onclick="clearFeature()" class="text-gray-500 hover:text-rose-500 font-bold flex items-center gap-0.5">
-                        <i class="fa-solid fa-xmark"></i> 解除
+                    <button onclick="clearFeature()" class="bg-white border border-gray-300 text-gray-600 hover:text-rose-600 px-2.5 py-1 rounded-full font-bold flex items-center gap-1 shadow-2xs active:scale-95 transition">
+                        <i class="fa-solid fa-xmark text-xs"></i> 通常表示に戻す
                     </button>
                 </div>
             </div>
 
-            <!-- 検索 & フィルターコントロールパネル -->
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3.5">
-                <!-- 検索バー（特集表示中は非表示になります） -->
-                <div id="search-input-container" class="relative">
+            <!-- 🔍 検索 & フィルターコントロールパネル（特集選択時は全体が非表示になります） -->
+            <div id="filter-control-panel" class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3.5 transition-all">
+                <!-- 検索バー -->
+                <div class="relative">
                     <i
                         class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
                     <input type="text" id="search-input" placeholder="キーワードで作品を検索..."
                         class="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#00C300] focus:border-[#00C300] transition">
                 </div>
 
-                <!-- 🌟 メインタブ：✨ 推し ⇄ 🌺 沖縄 ⇄ 🌸 敬語 ⇄ ⭐️ その他 -->
-                <div class="flex gap-1">
-                    <button onclick="switchCategory('recommended')" id="tab-recommended"
-                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
-                        ✨ 推し (<span id="count-recommended">0</span>)
-                    </button>
+                <!-- 🌟 メインタブ：🌺 沖縄 ⇄ 🌸 敬語 ⇄ ⭐️ その他 -->
+                <div class="flex gap-1.5">
                     <button onclick="switchCategory('okinawa')" id="tab-okinawa"
-                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
+                        class="flex-1 py-2 px-1 text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-1">
                         🌺 沖縄 (<span id="count-okinawa">0</span>)
                     </button>
                     <button onclick="switchCategory('keigo')" id="tab-keigo"
-                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
+                        class="flex-1 py-2 px-1 text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-1">
                         🌸 敬語 (<span id="count-keigo">0</span>)
                     </button>
                     <button onclick="switchCategory('others')" id="tab-others"
-                        class="flex-1 py-2 px-1 text-[10px] sm:text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-0.5">
+                        class="flex-1 py-2 px-1 text-xs font-bold rounded-full bg-white text-gray-500 border border-gray-300 hover:bg-gray-50 transition active:scale-95 flex justify-center items-center gap-1">
                         ⭐️ 他 (<span id="count-others">0</span>)
                     </button>
                 </div>
@@ -234,30 +230,6 @@
                 </div>
             </div>
 
-            <!-- 🚧 特集エリア専用の準備中（COMING SOON）画面 -->
-            <div id="feature-coming-soon"
-                class="hidden text-center py-12 px-4 space-y-4 bg-gradient-to-b from-white to-gray-50 rounded-2xl border border-gray-100 shadow-sm">
-                <div class="relative inline-block">
-                    <img src="top-left_2.png" alt="シーサー" class="w-16 h-16 mx-auto object-contain animate-bounce"
-                         onerror="this.onerror=null; this.src='top-left.png';">
-                </div>
-                <div class="space-y-1.5">
-                    <span class="inline-block text-[10px] font-black text-[#00C300] bg-green-50 px-2.5 py-0.5 rounded-full border border-green-200 tracking-wider">
-                        ✨ COMING SOON... ✨
-                    </span>
-                    <h3 class="text-sm font-black text-gray-800">ただいま今月の特集を準備中！</h3>
-                    <p class="text-xs text-gray-400 leading-relaxed max-w-[240px] mx-auto">
-                        おすすめ作品のラインナップを更新しています。公開まで少々お待ちください！
-                    </p>
-                </div>
-                <div class="pt-2">
-                    <button onclick="clearFeature(); switchCategory('okinawa');"
-                        class="text-xs text-[#00C300] hover:underline font-bold">
-                        🌺 沖縄系作品を見る →
-                    </button>
-                </div>
-            </div>
-
             <!-- エラー表示 -->
             <div id="error-message"
                 class="hidden text-center py-12 px-4 space-y-3 bg-white rounded-xl border border-gray-200 shadow-sm">
@@ -271,7 +243,7 @@
             <div id="empty-state"
                 class="hidden text-center py-16 bg-white rounded-xl border border-gray-200 shadow-sm space-y-2">
                 <i class="fa-regular fa-face-frown text-3xl text-gray-300"></i>
-                <p class="text-sm font-bold text-gray-400">該当する作品が見つかりませんでした</p>
+                <p class="text-sm font-bold text-gray-400" id="empty-state-text">該当する作品が見つかりませんでした</p>
             </div>
 
             <!-- 作品グリッド -->
@@ -296,9 +268,6 @@
 
     <script>
         // ==================== CONFIGURATION ====================
-        // 🟢 特集を公開状態に設定
-        const FEATURE_COMING_SOON = false;
-
         const SPREADSHEET_ID = '1sZ-NHSGmmXdvwDbDnsZtWSNdGt-4W3gGxhCs6ZOdp5s';
         const GID_MASTER = '0';
         const GID_HEART = '414139365';
@@ -378,9 +347,10 @@
 
                     obj.rowText = Object.values(row).join(' ');
 
-                    Object.keys(row).forEach(key => {
+                    const keys = Object.keys(row);
+                    keys.forEach((key, idx) => {
                         const k = key.trim().toLowerCase();
-                        const val = row[key] ? row[key].trim() : '';
+                        const val = row[key] ? String(row[key]).trim() : '';
 
                         if (k.includes('item id') || k.includes('id')) {
                             obj.id = val;
@@ -392,10 +362,6 @@
                             obj.url = val;
                         } else if (k.includes('ステータス') || k.includes('状態') || k.includes('status')) {
                             obj.status = val;
-                        } else if (k.includes('推し') || k.includes('おすすめ') || k.includes('オススメ') || k.includes('ピックアップ')) {
-                            obj.pickMonth = val.replace('/', '.').replace('-', '.');
-                        } else if (k.includes('プレミアム') || k.includes('premium')) {
-                            obj.premiumMonth = val.replace('/', '.').replace('-', '.');
                         } else if (k.includes('カテゴリ') || k.includes('type') || k.includes('種類')) {
                             if (val.includes('エフェクトスタンプ')) {
                                 obj.type = 'effect-sticker';
@@ -414,6 +380,20 @@
                             }
                         } else if (k.includes('開始日') || k.includes('日付') || k.includes('date')) {
                             obj.date = val;
+                        }
+
+                        // 🌟 G列（推し月）の判定：キー名判定 ＋ 7列目(idx===6)のフォールバック
+                        if (k.includes('推し') || k.includes('おすすめ') || k.includes('オススメ') || k.includes('ピック') || idx === 6) {
+                            if (val && !obj.pickMonth) {
+                                obj.pickMonth = val.replace(/[\/\-]/g, '.');
+                            }
+                        }
+
+                        // 👑 H列（プレミアム月）の判定：キー名判定 ＋ 8列目(idx===7)のフォールバック
+                        if (k.includes('プレミアム') || k.includes('premium') || idx === 7) {
+                            if (val && !obj.premiumMonth) {
+                                obj.premiumMonth = val.replace(/[\/\-]/g, '.');
+                            }
                         }
                     });
 
@@ -474,7 +454,10 @@
                     return true;
                 });
 
-                console.log('【配信中のみ】有効連動データ数:', mappedData.length);
+                console.log('【連動データ数】全作品:', mappedData.length);
+                console.log('【推し作品数】:', mappedData.filter(s => s.isRecommended).length);
+                console.log('【プレミアム作品数】:', mappedData.filter(s => s.isPremium).length);
+
                 return mappedData;
             } catch (error) {
                 console.error('Error fetching sheets:', error);
@@ -489,14 +472,6 @@
             const titleEl = document.getElementById('hero-pickup-title');
             const linkEl = document.getElementById('hero-pickup-link');
 
-            if (FEATURE_COMING_SOON) {
-                imgEl.src = 'top-left_2.png';
-                titleEl.textContent = '✨ 今月のイチオシ作品を準備中... ✨';
-                linkEl.href = 'https://store.line.me/search/ja?q=arakakiai';
-                linkEl.innerHTML = '<i class="fa-brands fa-line text-sm"></i> LINE STOREを見る';
-                return;
-            }
-
             // G列に推し月が入っている作品の中から、推し月または販売日が最新のものを取得
             const recommendedStamps = allStamps.filter(s => s.isRecommended);
             recommendedStamps.sort((a, b) => (b.pickMonth || '').localeCompare(a.pickMonth || '') || new Date(b.date || 0) - new Date(a.date || 0));
@@ -508,45 +483,37 @@
                 titleEl.textContent = targetStamp.title;
                 linkEl.href = targetStamp.url;
                 linkEl.innerHTML = '<i class="fa-brands fa-line text-sm"></i> LINEストアで見る';
+            } else {
+                imgEl.src = 'top-left_2.png';
+                titleEl.textContent = '✨ 今月のイチオシ作品を準備中... ✨';
+                linkEl.href = 'https://store.line.me/search/ja?q=arakakiai';
+                linkEl.innerHTML = '<i class="fa-brands fa-line text-sm"></i> LINE STOREを見る';
             }
         }
 
         function render() {
             const grid = document.getElementById('stamp-grid');
             const emptyState = document.getElementById('empty-state');
-            const featureComingSoon = document.getElementById('feature-coming-soon');
+            const emptyStateText = document.getElementById('empty-state-text');
             grid.innerHTML = '';
 
-            const isFeatureActive = activeFeature !== null || currentCategory === 'recommended';
-            if (isFeatureActive && FEATURE_COMING_SOON) {
-                grid.classList.add('hidden');
-                emptyState.classList.add('hidden');
-                featureComingSoon.classList.remove('hidden');
-                updateBadgeCounts();
-                return;
+            let filtered = [];
+
+            if (activeFeature === 'recommended') {
+                // 🌟 推し特集：推し作品を全件表示
+                filtered = allStamps.filter(stamp => stamp.isRecommended);
+            } else if (activeFeature === 'premium') {
+                // 👑 プレミアム特集：プレミアム作品を全件表示
+                filtered = allStamps.filter(stamp => stamp.isPremium);
+            } else {
+                // 通常モード：カテゴリ ＋ タイプ ＋ 検索キーワードで絞り込み
+                filtered = allStamps.filter(stamp => {
+                    const matchCategory = stamp.category === currentCategory;
+                    const matchType = currentType === 'all' || stamp.type === currentType;
+                    const matchSearch = searchQuery === '' || stamp.title.toLowerCase().includes(searchQuery.toLowerCase());
+                    return matchCategory && matchType && matchSearch;
+                });
             }
-
-            featureComingSoon.classList.add('hidden');
-
-            let filtered = allStamps.filter(stamp => {
-                if (activeFeature === 'recommended') {
-                    if (!stamp.isRecommended) return false;
-                } else if (activeFeature === 'premium') {
-                    if (!stamp.isPremium) return false;
-                } else {
-                    if (currentCategory === 'recommended') {
-                        if (!stamp.isRecommended) return false;
-                    } else {
-                        if (stamp.category !== currentCategory) return false;
-                    }
-                }
-
-                const matchType = currentType === 'all' || stamp.type === currentType;
-                // 特集絞り込み中は検索バーを隠すため、searchQueryは空文字扱い
-                const query = activeFeature ? '' : searchQuery;
-                const matchSearch = query === '' || stamp.title.toLowerCase().includes(query.toLowerCase());
-                return matchType && matchSearch;
-            });
 
             if (currentSort === 'newest') {
                 filtered.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
@@ -564,6 +531,13 @@
             if (filtered.length === 0) {
                 grid.classList.add('hidden');
                 emptyState.classList.remove('hidden');
+                if (activeFeature === 'recommended') {
+                    emptyStateText.textContent = '今月の推し作品はただいま準備中です';
+                } else if (activeFeature === 'premium') {
+                    emptyStateText.textContent = 'プレミアム解禁作品はただいま準備中です';
+                } else {
+                    emptyStateText.textContent = '該当する作品が見つかりませんでした';
+                }
                 return;
             }
 
@@ -680,7 +654,7 @@
             const statusText = document.getElementById('feature-status-text');
             const resetBar = document.getElementById('feature-reset-bar');
             const resetLabel = document.getElementById('feature-reset-label');
-            const searchContainer = document.getElementById('search-input-container');
+            const filterPanel = document.getElementById('filter-control-panel');
 
             ['recommended', 'premium'].forEach(key => {
                 const btn = document.getElementById(`feature-btn-${key}`);
@@ -696,8 +670,8 @@
             if (activeFeature) {
                 statusText.classList.remove('hidden');
                 resetBar.classList.remove('hidden');
-                // 🔍 特集絞り込み中は検索バーを非表示にする
-                if (searchContainer) searchContainer.classList.add('hidden');
+                // 🔍 特集選択時は、検索・フィルターパネル全体を非表示にする
+                if (filterPanel) filterPanel.classList.add('hidden');
 
                 let title = '特集';
                 if (activeFeature === 'recommended') title = '✨ 今月の推し特集';
@@ -707,8 +681,8 @@
             } else {
                 statusText.classList.add('hidden');
                 resetBar.classList.add('hidden');
-                // 🔍 通常画面では検索バーを表示する
-                if (searchContainer) searchContainer.classList.remove('hidden');
+                // 🔍 通常画面に戻ったら、検索・フィルターパネルを表示する
+                if (filterPanel) filterPanel.classList.remove('hidden');
             }
         }
 
@@ -730,12 +704,10 @@
         }
 
         function updateBadgeCounts() {
-            const recommendedCount = allStamps.filter(s => s.isRecommended).length;
             const okinawaCount = allStamps.filter(s => s.category === 'okinawa').length;
             const keigoCount = allStamps.filter(s => s.category === 'keigo').length;
             const othersCount = allStamps.filter(s => s.category === 'others').length;
 
-            document.getElementById('count-recommended').textContent = recommendedCount;
             document.getElementById('count-okinawa').textContent = okinawaCount;
             document.getElementById('count-keigo').textContent = keigoCount;
             document.getElementById('count-others').textContent = othersCount;
@@ -751,7 +723,7 @@
             currentCategory = category;
             localStorage.setItem('portfolio_category', category);
 
-            ['recommended', 'okinawa', 'keigo', 'others'].forEach(cat => {
+            ['okinawa', 'keigo', 'others'].forEach(cat => {
                 const tab = document.getElementById(`tab-${cat}`);
                 if (tab) {
                     if (cat === category) {
