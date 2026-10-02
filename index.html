@@ -88,8 +88,8 @@
         <!-- メインコンテンツ -->
         <main class="p-4 space-y-4 flex-grow">
 
-            <!-- 📖 雑誌風 特集ピックアップバナー（2分割表示） -->
-            <div class="space-y-1.5">
+            <!-- 📖 雑誌風 特集セクション -->
+            <div class="space-y-2.5">
                 <div class="flex items-center justify-between px-1">
                     <span class="text-[11px] font-black text-gray-500 flex items-center gap-1 tracking-wider">
                         <i class="fa-solid fa-sparkles text-amber-500"></i> FEATURE ARTICLES
@@ -98,6 +98,34 @@
                         <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#00C300] animate-pulse"></span>特集絞り込み中
                     </span>
                 </div>
+
+                <!-- 🌟 1カット掲載：今月のイチオシ ピックアップカード -->
+                <div id="hero-pickup-card" class="bg-gradient-to-b from-amber-50/70 to-white rounded-2xl border border-amber-200/60 p-3.5 shadow-sm text-center relative">
+                    <div class="flex items-center justify-center gap-1 mb-2">
+                        <span class="inline-flex items-center gap-1 text-[10px] font-black text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-full">
+                            <i class="fa-solid fa-crown text-amber-500 text-[9px]"></i> 今月のイチオシ
+                        </span>
+                    </div>
+
+                    <!-- 1カット画像 -->
+                    <div class="w-24 h-24 mx-auto flex items-center justify-center p-2 bg-white rounded-xl shadow-xs border border-gray-100 mb-2">
+                        <img id="hero-pickup-img" src="top-left_2.png" alt="今月のイチオシ" class="max-w-full max-h-full object-contain"
+                             onerror="this.onerror=null; this.src='top-left.png';">
+                    </div>
+
+                    <!-- 作品タイトル -->
+                    <h3 id="hero-pickup-title" class="text-xs font-bold text-gray-800 line-clamp-1 mb-2.5 px-2">
+                        読み込み中...
+                    </h3>
+
+                    <!-- 作品リンクボタン -->
+                    <a id="hero-pickup-link" href="#" target="_blank" rel="noopener noreferrer"
+                       class="inline-flex items-center justify-center gap-1.5 bg-[#00C300] text-white text-[11px] font-black px-4 py-1.5 rounded-full shadow-sm hover:bg-[#00aa00] transition active:scale-95">
+                        <i class="fa-brands fa-line text-sm"></i> LINEストアで見る
+                    </a>
+                </div>
+
+                <!-- 特集カード（2分割絞り込みボタン） -->
                 <div class="grid grid-cols-2 gap-2">
                     <!-- 特集カード 1: 今月の推し -->
                     <button onclick="toggleFeature('recommended')" id="feature-btn-recommended"
@@ -107,7 +135,7 @@
                             <i class="fa-solid fa-star text-yellow-200 text-xs"></i>
                         </div>
                         <div class="mt-2">
-                            <p class="text-[10px] text-amber-100 font-bold leading-tight">作者イチオシ！</p>
+                            <p class="text-[10px] text-amber-100 font-bold leading-tight">一覧をチェック！</p>
                             <h4 class="text-xs font-black leading-tight mt-0.5">今月の推し特集</h4>
                         </div>
                     </button>
@@ -454,6 +482,32 @@
             }
         }
 
+        // 🌟 1カット枠（今月のイチオシ）の更新
+        function updateHeroPickup() {
+            const imgEl = document.getElementById('hero-pickup-img');
+            const titleEl = document.getElementById('hero-pickup-title');
+            const linkEl = document.getElementById('hero-pickup-link');
+
+            if (FEATURE_COMING_SOON) {
+                imgEl.src = 'top-left_2.png';
+                titleEl.textContent = '✨ 今月のイチオシ作品を準備中... ✨';
+                linkEl.href = 'https://store.line.me/search/ja?q=arakakiai';
+                linkEl.innerHTML = '<i class="fa-brands fa-line text-sm"></i> LINE STOREを見る';
+                return;
+            }
+
+            // G列に推し月が入っている作品の中から、最新のものを取得（なければ全体の最新作）
+            const recommendedStamps = allStamps.filter(s => s.isRecommended);
+            const targetStamp = recommendedStamps.length > 0 ? recommendedStamps[0] : allStamps[0];
+
+            if (targetStamp) {
+                imgEl.src = targetStamp.img;
+                titleEl.textContent = targetStamp.title;
+                linkEl.href = targetStamp.url;
+                linkEl.innerHTML = '<i class="fa-brands fa-line text-sm"></i> LINEストアで見る';
+            }
+        }
+
         function render() {
             const grid = document.getElementById('stamp-grid');
             const emptyState = document.getElementById('empty-state');
@@ -744,6 +798,7 @@
 
             document.getElementById('loading-placeholder').classList.add('hidden');
             if (stamps && stamps.length > 0) {
+                updateHeroPickup();
                 render();
             } else {
                 showError();
