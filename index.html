@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" data-build="2026-10-02-feature-cards">
 
 <head>
     <meta charset="UTF-8">
@@ -100,36 +100,6 @@
                     </span>
                 </div>
 
-                <!-- 🌟 1カット掲載：今月のイチオシ ピックアップカード -->
-                <div id="hero-pickup-card"
-                    class="bg-gradient-to-b from-amber-50/70 to-white rounded-2xl border border-amber-200/60 p-3.5 shadow-sm text-center relative">
-                    <div class="flex items-center justify-center gap-1 mb-2">
-                        <span
-                            class="inline-flex items-center gap-1 text-[10px] font-black text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-full">
-                            <i class="fa-solid fa-crown text-amber-500 text-[9px]"></i> 今月のイチオシ
-                        </span>
-                    </div>
-
-                    <!-- 1カット画像 -->
-                    <div
-                        class="w-24 h-24 mx-auto flex items-center justify-center p-2 bg-white rounded-xl shadow-xs border border-gray-100 mb-2">
-                        <img id="hero-pickup-img" src="top-left_2.png" alt="今月のイチオシ"
-                            class="max-w-full max-h-full object-contain"
-                            onerror="this.onerror=null; this.src='top-left.png';">
-                    </div>
-
-                    <!-- 作品タイトル -->
-                    <h3 id="hero-pickup-title" class="text-xs font-bold text-gray-800 line-clamp-1 mb-2.5 px-2">
-                        読み込み中...
-                    </h3>
-
-                    <!-- 作品リンクボタン -->
-                    <a id="hero-pickup-link" href="#" target="_blank" rel="noopener noreferrer"
-                        class="inline-flex items-center justify-center gap-1.5 bg-[#00C300] text-white text-[11px] font-black px-4 py-1.5 rounded-full shadow-sm hover:bg-[#00aa00] transition active:scale-95">
-                        <i class="fa-brands fa-line text-sm"></i> LINEストアで見る
-                    </a>
-                </div>
-
                 <!-- 特集カード（2分割絞り込みボタン） -->
                 <div class="grid grid-cols-2 gap-2">
                     <!-- 特集カード 1: 今月の推し -->
@@ -178,7 +148,7 @@
 
             <!-- 検索 & フィルターコントロールパネル -->
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3.5">
-                <!-- 検索バー（特集表示中は非表示になります） -->
+                <!-- 検索バー（通常時のみ表示。特集表示中は非表示） -->
                 <div id="search-input-container" class="relative">
                     <i
                         class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
@@ -527,38 +497,6 @@
             }
         }
 
-        // 🌟 1カット枠（今月のイチオシ）の更新
-        function updateHeroPickup() {
-            const imgEl = document.getElementById('hero-pickup-img');
-            const titleEl = document.getElementById('hero-pickup-title');
-            const linkEl = document.getElementById('hero-pickup-link');
-
-            if (FEATURE_COMING_SOON) {
-                imgEl.src = 'top-left_2.png';
-                titleEl.textContent = '✨ 今月のイチオシ作品を準備中... ✨';
-                linkEl.href = 'https://store.line.me/search/ja?q=arakakiai';
-                linkEl.innerHTML = '<i class="fa-brands fa-line text-sm"></i> LINE STOREを見る';
-                return;
-            }
-
-            // 推し月 === 現在年月 の作品だけを候補にする（販売開始日の新しい順）
-            const candidates = allStamps.filter(s => s.isPickNow);
-            candidates.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
-            const targetStamp = candidates[0];
-
-            if (targetStamp) {
-                imgEl.src = targetStamp.img;
-                titleEl.textContent = targetStamp.title;
-                linkEl.href = targetStamp.url;
-                linkEl.innerHTML = '<i class="fa-brands fa-line text-sm"></i> LINEストアで見る';
-            } else {
-                imgEl.src = 'top-left_2.png';
-                titleEl.textContent = '✨ 今月のイチオシ作品を準備中... ✨';
-                linkEl.href = 'https://store.line.me/search/ja?q=arakakiai';
-                linkEl.innerHTML = '<i class="fa-brands fa-line text-sm"></i> LINE STOREを見る';
-            }
-        }
-
         function render() {
             const grid = document.getElementById('stamp-grid');
             const emptyState = document.getElementById('empty-state');
@@ -863,7 +801,6 @@
 
             document.getElementById('loading-placeholder').classList.add('hidden');
             if (stamps && stamps.length > 0) {
-                updateHeroPickup();
                 render();
             } else {
                 showError();
