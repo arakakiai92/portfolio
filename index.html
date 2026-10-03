@@ -128,7 +128,7 @@
                         </div>
                         <div class="mt-2">
                             <p class="text-[10px] text-purple-200 font-bold leading-tight">使い放題に追加！</p>
-                            <h4 class="text-xs font-black leading-tight mt-0.5">プレミアム解禁特集</h4>
+                            <h4 class="text-xs font-black leading-tight mt-0.5">👑 プレミアム作品</h4>
                         </div>
                     </button>
                 </div>
@@ -426,7 +426,9 @@
                         return k ? clean[k] : '';
                     };
                     obj.pickMonth = normalizeYM(findCol(COLUMN_MAP.pickMonth, '推し'));
-                    obj.premiumMonth = normalizeYM(findCol(COLUMN_MAP.premiumMonth, 'プレミアム'));
+                    const premiumRaw = findCol(COLUMN_MAP.premiumMonth, 'プレミアム');
+                    obj.premiumMonth = normalizeYM(premiumRaw);
+                    obj.premiumHasValue = premiumRaw !== '';
 
                     const typeVal = col(COLUMN_MAP.type);
                     if (typeVal.includes('エフェクトスタンプ')) {
@@ -450,7 +452,7 @@
                     // 推し・プレミアムの有効判定（空欄以外）
                     // バッジ用（値が入っている）と、特集用（現在年月と一致）を分ける
                     obj.isRecommended = obj.pickMonth !== '';
-                    obj.isPremium = obj.premiumMonth !== '';
+                    obj.isPremium = obj.premiumHasValue; // プレミアム月に値が入っている作品はすべてプレミアム作品
 
                     const titleText = (obj.title || '').toLowerCase();
 
@@ -536,7 +538,7 @@
             if (activeFeature !== null) {
                 // 🌟 特集表示中：特集条件だけを適用（カテゴリ・種類・検索は一切見ない）
                 filtered = allStamps.filter(stamp =>
-                    activeFeature === 'recommended' ? isPickNow(stamp) : isPremiumNow(stamp));
+                    activeFeature === 'recommended' ? isPickNow(stamp) : stamp.isPremium);
             } else {
                 // 通常時：カテゴリ + 種類 + 検索
                 filtered = allStamps.filter(stamp => {
@@ -551,7 +553,14 @@
                 });
             }
 
-            if (currentSort === 'newest') {
+            if (activeFeature === 'premium') {
+                // 👑 プレミアム作品：① 今月解禁 → ② それ以外。各グループ内は作品の販売開始日の新しい順
+                filtered.sort((a, b) => {
+                    const ga = isPremiumNow(a) ? 0 : 1, gb = isPremiumNow(b) ? 0 : 1;
+                    if (ga !== gb) return ga - gb;
+                    return new Date(b.date || 0) - new Date(a.date || 0);
+                });
+            } else if (currentSort === 'newest') {
                 filtered.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
             } else if (currentSort === 'hearts') {
                 filtered.sort((a, b) => {
@@ -612,7 +621,12 @@
 
                 // 👑 プレミアムバッジ
                 const premiumBadge = stamp.isPremium
-                    ? `<span class="text-[10px] text-purple-700 font-bold bg-purple-50 border border-purple-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-crown text-purple-500 text-[9px]"></i>${stamp.premiumMonth.replace('-', '.')} プレミアム</span>`
+                    ? `<span class="text-[10px] text-purple-700 font-bold bg-purple-50 border border-purple-200 px-1.5 py-0.5 rounded-full flex items-center gap-0.5"><i class="fa-solid fa-crown text-purple-500 text-[9px]"></i>${stamp.premiumMonth ? stamp.premiumMonth.replace('-', '.') + ' ' : ''}プレミアム</span>`
+                    : '';
+
+                // 🆕 今月解禁バッジ（プレミアム作品一覧で、プレミアム月＝現在年月の作品のみ）
+                const unlockBadge = (activeFeature === 'premium' && isPremiumNow(stamp))
+                    ? `<span class="text-[10px] text-white font-bold bg-purple-600 px-1.5 py-0.5 rounded-full">今月解禁</span>`
                     : '';
 
                 // 🏷️ 急上昇・定番バッジ
@@ -644,6 +658,7 @@
                                     <div class="flex items-center gap-1 flex-wrap">
                                         <span class="inline-block text-[9px] font-black px-1.5 py-0.5 rounded ${badgeStyle}">${badgeLabel}</span>
                                         ${recommendBadge}
+                                        ${unlockBadge}
                                         ${premiumBadge}
                                         ${trendBadge}
                                     </div>
@@ -713,7 +728,7 @@
 
                 let title = '特集';
                 if (activeFeature === 'recommended') title = '✨ 今月の推し特集';
-                if (activeFeature === 'premium') title = '👑 プレミアム解禁特集';
+                if (activeFeature === 'premium') title = '👑 プレミアム作品';
 
                 resetLabel.innerHTML = `<i class="fa-solid fa-sparkles text-[#00C300]"></i> <strong>${title}</strong> を表示中`;
             } else {
