@@ -147,7 +147,7 @@
             </div>
 
             <!-- 検索 & フィルターコントロールパネル -->
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3.5">
+            <div id="filter-panel" class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 space-y-3.5">
                 <!-- 検索バー（通常時のみ表示。特集表示中は非表示） -->
                 <div id="search-input-container" class="relative">
                     <i
@@ -700,14 +700,9 @@
             const resetBar = document.getElementById('feature-reset-bar');
             const resetLabel = document.getElementById('feature-reset-label');
             const searchContainer = document.getElementById('search-input-container');
-            // 特集中はカテゴリタブ・種類フィルターを無効表示（操作不可）にする。値(currentCategory/currentType)は変更しない
-            ['category-tab-bar', 'sub-filter-bar'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.classList.toggle('opacity-40', activeFeature !== null);
-                    el.classList.toggle('pointer-events-none', activeFeature !== null);
-                }
-            });
+            // 特集中は検索・カテゴリ・並び替え・種類フィルターをまとめて非表示にする（選択値は変更しないので、解除後に復帰）
+            const filterPanel = document.getElementById('filter-panel');
+            if (filterPanel) filterPanel.classList.toggle('hidden', activeFeature !== null);
 
             ['recommended', 'premium'].forEach(key => {
                 const btn = document.getElementById(`feature-btn-${key}`);
